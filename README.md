@@ -1,4 +1,4 @@
-# 🎥 Video Downloader v1.0
+# 🎥 YS Video Downloader v1.0
 
 Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** tabanlı, açık kaynaklı ve kullanıcı dostu masaüstü uygulaması.
 
@@ -19,7 +19,7 @@ Bu proje taşınabilir (portable) yapıdadır. Kurulum gerektirmez.
 
 ### Seçenek A: Hazır EXE (Windows)
 1.  **Releases** kısmından son sürümü (ZIP) indirin.
-2.  ZIP'ten çıkarın ve `Video_Downloader.exe` dosyasını çalıştırın.
+2.  ZIP'ten çıkarın ve `ysvdown.exe` dosyasını çalıştırın.
 
 ### Seçenek B: Kaynak Kod (Geliştiriciler)
 1.  Depoyu klonlayın.
@@ -35,5 +35,6 @@ Bu yazılım sadece eğitim amaçlı ve kişisel arşivleme (fair use) için gel
 Kullanıcılar, bu yazılımı kullanarak indirdikleri içeriklerden ve bu içerikleri nasıl kullandıklarından tamamen kendileri sorumludur. Geliştirici, yazılımın kötüye kullanımından sorumlu tutulamaz.
 
 ## 📄 Lisans
+
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
