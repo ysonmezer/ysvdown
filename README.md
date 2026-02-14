@@ -19,10 +19,10 @@
 Bu proje taşınabilir (portable) yapıdadır, kurulum gerektirmez.
 
 1.  **Releases** kısmından `ysvdown_v2.0_portable.zip` dosyasını indirin.
-2.  ZIP dosyasını klasöre çıkartın.
+2.  ZIP dosyasını bir klasöre çıkartın. (Örneğin Masaüstüne)
 3.  Klasörün içindeki `YS Video Downloader v2.0.exe` uygulamasını çalıştırın.
 
-*(Not: Bu sürüm, antivirüs hatalarını (False Positive) önlemek amacıyla klasör yapısında paketlenmiştir. Lütfen klasördeki dosyaların yerini değiştirmeyin.)*
+*(Not: Bu sürüm, antivirüs hatalarını (False Positive) önlemek amacıyla klasör yapısında paketlenmiştir. Dosyaları farklı bir yere taşırsanız çalışmayacaktır. Lütfen klasördeki dosyaların yerini değiştirmeyin.)*
 
 ### Geliştiriciler İçin (Kaynak Kod)
 Kodu incelemek veya geliştirmek isterseniz:
@@ -36,6 +36,7 @@ Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korun
 ## 📄 Lisans
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
+
 
 
 
