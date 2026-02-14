@@ -16,30 +16,18 @@
 
 ## 🚀 Kurulum ve Kullanım
 
-### Seçenek A: Hazır Paket (Önerilen - ZIP)
-En sorunsuz deneyim için bu yöntemi kullanın. Gerekli tüm dosyalar (FFmpeg, İkon vb.) dahildir.
+Bu proje taşınabilir (portable) yapıdadır, kurulum gerektirmez.
 
-1.  Sağ taraftaki **Releases** kısmından **v2.0 Stable** altındaki `.zip` uzantılı dosyayı indirin.
-2.  İndirdiğiniz ZIP dosyasını bir klasöre çıkartın (Sağ tık -> Tümünü Ayıkla).
-3.  Klasörün içindeki `YS Video Downloader v2.0.exe` dosyasını çalıştırın.
-    * *(Ekstra bir işlem yapmanıza gerek yoktur.)*
+1.  Sağ taraftaki **Releases** kısmından son sürümü (ZIP formatında) indirin.
+2.  İndirdiğiniz dosyayı klasöre çıkartın.
+3.  İçindeki `YS Video Downloader v2.0.exe` dosyasını çalıştırın.
+    * *(Programın çalışması için gerekli tüm dosyalar pakete dahildir, ek işlem gerekmez.)*
 
-### Seçenek B: Sadece EXE (İleri Düzey)
-Eğer sadece `.exe` dosyasını indirirseniz:
-1.  Programın çalışabilmesi için sisteminizde `ffmpeg.exe` olduğundan emin olun.
-2.  `ffmpeg.exe` dosyasını, indirdiğiniz programın yanına koyun.
-
-### Seçenek C: Kaynak Kod (Geliştiriciler İçin)
+### Geliştiriciler İçin (Kaynak Kod)
 Kodu incelemek veya geliştirmek isterseniz:
 1.  Depoyu klonlayın.
-2.  Gerekli kütüphaneleri yükleyin:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Uygulamayı başlatın:
-    ```bash
-    python main.py
-    ```
+2.  Gerekli kütüphaneleri yükleyin: `pip install -r requirements.txt`
+3.  Uygulamayı başlatın: `python main.py`
 
 ## ⚠️ Yasal Uyarı
 Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korunan materyallerin izinsiz indirilmesi ilgili platformların kurallarına aykırı olabilir. Sorumluluk kullanıcıya aittir.
@@ -47,4 +35,5 @@ Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korun
 ## 📄 Lisans
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
+
 
