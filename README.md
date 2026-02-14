@@ -1,6 +1,6 @@
 # 🎥 YS Video Downloader v2.0
 
-Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** kütüphanesini kullanan, açık kaynaklı ve akıllı masaüstü uygulaması.
+Çeşitli video barındırma platformlarından medya içeriklerini indirmek için geliştirilmiş, **yt-dlp** kütüphanesini kullanan, açık kaynaklı, akıllı masaüstü uygulaması.
 
 ![Lisans](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.x-yellow.svg)
@@ -47,3 +47,4 @@ Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korun
 ## 📄 Lisans
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
+
