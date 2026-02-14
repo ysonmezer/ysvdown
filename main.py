@@ -4,17 +4,15 @@ import subprocess
 import threading
 import os
 import sys
-import re
-import json
-import time
 
-# PROJE: Video Downloader v1.0 (Final Optimized)
-# YENİLİK: Playlist analizi engellendi (--no-playlist), analiz hızı artırıldı.
+# PROJE: YS Video Downloader (ysvdown)
+# SÜRÜM: v2.0 Stable
+# YAPIM: Python + Tkinter + yt-dlp (Embedded)
 
-class VideoIndiriciV3:
+class YSVideoDownloader:
     def __init__(self, root):
         self.root = root
-        self.root.title("YS Video Downloader v1.0")
+        self.root.title("YS Video Downloader v2.0")
         self.root.geometry("700x700")
         
         # --- STİL AYARLARI ---
@@ -32,6 +30,9 @@ class VideoIndiriciV3:
         self.video_metadata = None
         self.analiz_zamanlayici = None
         self.donusturme_yapilsin_mi = False
+        self.playlist_modu = False
+        self.iptal_bayragi = False
+        self.son_indirilen_dosya = None
 
         # URL İzleyici
         self.url_var.trace_add("write", self.on_url_change)
@@ -44,6 +45,13 @@ class VideoIndiriciV3:
         if os.path.exists(icon_path):
             try: self.root.iconbitmap(icon_path)
             except: pass
+
+    def dosya_yolu_bul(self, dosya_adi):
+        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable)
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_path, dosya_adi)
 
     def arayuz_olustur(self):
         # 1. Kaynak Bölümü
@@ -98,8 +106,10 @@ class VideoIndiriciV3:
         self.log_text = scrolledtext.ScrolledText(self.root, height=10, state='disabled', font=("Consolas", 8))
         self.log_text.pack(padx=15, pady=5, fill="both", expand=True)
 
-        tk.Label(self.root, text="©YS v1.0 - 2026", fg="gray", font=("Segoe UI", 8)).pack(side=tk.BOTTOM, pady=5)
+        # Footer (Güncellendi)
+        tk.Label(self.root, text="©2026 by YS", fg="gray", font=("Segoe UI", 8)).pack(side=tk.BOTTOM, pady=5)
 
+    # --- UI YARDIMCILARI ---
     def on_url_change(self, *args):
         if self.analiz_zamanlayici is not None:
             self.root.after_cancel(self.analiz_zamanlayici)
@@ -120,6 +130,34 @@ class VideoIndiriciV3:
         self.lbl_analiz_durum.config(text="")
         self.video_metadata = None
 
+    def pano_yapistir(self):
+        try:
+            self.url_entry.delete(0, tk.END)
+            self.url_entry.insert(0, self.root.clipboard_get())
+        except: pass
+
+    def klasor_sec(self):
+        klasor = filedialog.askdirectory()
+        if klasor: self.kayit_yeri.set(klasor)
+
+    def log_yaz(self, mesaj):
+        self.log_text.config(state='normal')
+        self.log_text.insert(tk.END, mesaj + "\n")
+        self.log_text.see(tk.END)
+        self.log_text.config(state='disabled')
+
+    def buton_sifirla(self):
+        self.download_button.config(state='normal', text="İNDİRMEYİ BAŞLAT", bg="#0078D7")
+
+    def arayuz_guncelle(self):
+        if self.format_secimi.get() == "mp3":
+            self.rb_720.config(state="disabled")
+            self.rb_1080.config(state="disabled")
+            self.rb_4k.config(state="disabled")
+        elif self.video_metadata:
+            self.analiz_basarili(self.video_metadata) 
+
+    # --- ANALİZ MODÜLÜ ---
     def analizi_baslat(self):
         url = self.url_var.get().strip()
         if not url: return
@@ -130,29 +168,76 @@ class VideoIndiriciV3:
         threading.Thread(target=self.analiz_thread, args=(url,)).start()
 
     def analiz_thread(self, url):
-        yt_dlp_exe = self.dosya_yolu_bul("yt-dlp.exe")
+        import yt_dlp 
+        ffmpeg_exe = self.dosya_yolu_bul("ffmpeg.exe")
         
-        # HIZLANDIRMA GÜNCELLEMESİ YAPILDI
-        komut = [
-            yt_dlp_exe, 
-            "--dump-json", 
-            "--no-warnings", 
-            "--no-playlist",      # Playlist kontrolünü kapat (Hızlandırır)
-            "--socket-timeout", "10", # 10sn zaman aşımı
-            url
-        ]
-        
+        self.playlist_modu = False
+        noplaylist_degeri = True 
+
+        # --- HIZLI KONTROL ---
+        check_opts = {
+            'quiet': True,
+            'no_warnings': True,
+            'extract_flat': 'in_playlist',
+            'playlist_items': '1', # Hız için sadece 1. öğeye bak
+            'socket_timeout': 5,
+        }
+
         try:
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            result = subprocess.run(komut, capture_output=True, text=True, encoding='utf-8', startupinfo=startupinfo, creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0)
+            with yt_dlp.YoutubeDL(check_opts) as ydl:
+                info = ydl.extract_info(url, download=False, process=False)
+                
+                # Playlist Algılama
+                if 'entries' in info or info.get('_type') == 'playlist':
+                    video_sayisi = info.get('playlist_count')
+                    sayi_metni = f" ({video_sayisi} Video)" if video_sayisi else ""
+                    
+                    msg_text = f"Bu link bir Oynatma Listesi{sayi_metni} içeriyor.\n\n"
+                    msg_text += "Sadece şu anki videoyu mu indirmek istersiniz?\n\n"
+                    msg_text += "✅ EVET: Sadece Videoyu İndir (Varsayılan)\n"
+                    msg_text += "📂 HAYIR: Tüm Listeyi İndir (Uzun sürebilir)\n"
+                    msg_text += "❌ İPTAL: Vazgeç"
+
+                    cevap = messagebox.askyesnocancel(
+                        "İndirme Tercihi", 
+                        msg_text,
+                        default=messagebox.YES,
+                        icon='question'
+                    )
+                    
+                    if cevap is None: # İptal
+                        self.root.after(0, self.reset_ui_state)
+                        return 
+                    elif cevap: # EVET (Sadece Video)
+                        self.playlist_modu = False
+                        noplaylist_degeri = True
+                    else: # HAYIR (Tüm Liste)
+                        self.playlist_modu = True
+                        noplaylist_degeri = False
+
+            # --- GERÇEK ANALİZ ---
+            ydl_opts = {
+                'quiet': True,
+                'no_warnings': True,
+                'noplaylist': noplaylist_degeri,
+                'socket_timeout': 10,
+                'ffmpeg_location': ffmpeg_exe,
+            }
+
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                if self.playlist_modu:
+                     ydl_opts['extract_flat'] = True 
+                     with yt_dlp.YoutubeDL(ydl_opts) as ydl_flat:
+                        metadata = ydl_flat.extract_info(url, download=False)
+                        playlist_title = metadata.get('title', 'Bilinmeyen Liste')
+                        metadata['title'] = f"[PLAYLIST] {playlist_title}"
+                else:
+                    metadata = ydl.extract_info(url, download=False)
             
-            if result.returncode == 0:
-                metadata = json.loads(result.stdout)
-                self.root.after(0, lambda: self.analiz_basarili(metadata))
-            else:
-                self.root.after(0, self.analiz_hatali)
-        except Exception:
+            self.root.after(0, lambda: self.analiz_basarili(metadata))
+            
+        except Exception as e:
+            print(f"Analiz Hatası: {e}")
             self.root.after(0, self.analiz_hatali)
 
     def analiz_hatali(self):
@@ -180,164 +265,180 @@ class VideoIndiriciV3:
         if not any(r >= current_res for r in resolutions):
              self.kalite_secimi.set("720")
 
-    def arayuz_guncelle(self):
-        if self.format_secimi.get() == "mp3":
-            self.rb_720.config(state="disabled")
-            self.rb_1080.config(state="disabled")
-            self.rb_4k.config(state="disabled")
-        elif self.video_metadata:
-            self.analiz_basarili(self.video_metadata) 
-
-    def klasor_sec(self):
-        klasor = filedialog.askdirectory()
-        if klasor: self.kayit_yeri.set(klasor)
-
-    def pano_yapistir(self):
-        try:
-            self.url_entry.delete(0, tk.END)
-            self.url_entry.insert(0, self.root.clipboard_get())
-        except: pass
-
-    def log_yaz(self, mesaj):
-        self.log_text.config(state='normal')
-        self.log_text.insert(tk.END, mesaj + "\n")
-        self.log_text.see(tk.END)
-        self.log_text.config(state='disabled')
-
-    def dosya_yolu_bul(self, dosya_adi):
-        if getattr(sys, 'frozen', False):
-            base_path = os.path.dirname(sys.executable)
-        else:
-            base_path = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(base_path, dosya_adi)
-
+    # --- İNDİRME MOTORU ---
     def indirmeyi_baslat(self):
+        # İptal Modu Kontrolü
+        if self.download_button['text'] == "İPTAL ET ❌":
+            self.iptal_et()
+            return
+
         url = self.url_var.get()
-        self.donusturme_yapilsin_mi = False 
+        self.iptal_bayragi = False
+        self.donusturme_yapilsin_mi = False
+        self.son_indirilen_dosya = None
 
-        # 4K VP9 KONTROLÜ
+        # 4K VP9 Kontrolü
         if self.format_secimi.get() == "video" and self.kalite_secimi.get() == "2160":
-            formats = self.video_metadata.get('formats', [])
-            has_4k_h264 = False
-            for f in formats:
-                if f.get('height') == 2160 and f.get('vcodec', '').startswith('avc1'):
-                    has_4k_h264 = True
-                    break
-            
-            if not has_4k_h264:
-                cevap = messagebox.askyesnocancel(
-                    "Format Dönüştürme", 
-                    "Bu 4K video VP9 formatındadır (Bazı Premiere sürümleri açmayabilir).\n\n"
-                    "EVET: İndir ve Premiere uyumlu formata dönüştür (Uzun sürebilir)\n"
-                    "HAYIR: Olduğu gibi indir (Dönüştürme yapma)\n"
-                    "İPTAL: İşlemi iptal et"
-                )
+            try:
+                formats = self.video_metadata.get('formats', [])
+                has_4k_h264 = False
+                for f in formats:
+                    if f.get('height') == 2160 and f.get('vcodec', '').startswith('avc1'):
+                        has_4k_h264 = True
+                        break
                 
-                if cevap is None: return
-                elif cevap: self.donusturme_yapilsin_mi = True
-                else: self.donusturme_yapilsin_mi = False
+                if not has_4k_h264:
+                    cevap = messagebox.askyesnocancel(
+                        "Format Dönüştürme Önerisi", 
+                        "Bu videonun 4K versiyonu VP9 formatındadır.\n"
+                        "(Bazı eski Premiere sürümleri bunu açmayabilir.)\n\n"
+                        "🛠️ EVET: İndir ve H.264 formatına dönüştür (Uzun sürer)\n"
+                        "⚡ HAYIR: Olduğu gibi (VP9) indir\n"
+                        "❌ İPTAL: İşlemi iptal et"
+                    )
+                    
+                    if cevap is None: return 
+                    elif cevap: self.donusturme_yapilsin_mi = True
+                    else: self.donusturme_yapilsin_mi = False
+            except: pass
 
-        self.download_button.config(state='disabled', text="İşlem Sürüyor...", bg="#999999")
+        self.download_button.config(text="İPTAL ET ❌", bg="#d9534f", state='normal')
         self.progress['value'] = 0
         threading.Thread(target=self.indir_gorevi, args=(url,)).start()
 
+    def iptal_et(self):
+        cevap = messagebox.askyesno("İptal", "İndirme işlemini durdurmak istiyor musunuz?")
+        if cevap:
+            self.iptal_bayragi = True
+            self.log_yaz("⚠️ İptal sinyali gönderildi, durduruluyor...")
+            self.download_button.config(state='disabled')
+
     def indir_gorevi(self, url):
-        self.log_yaz(f"--- İndirme Başlıyor ---")
-        yt_dlp_exe = self.dosya_yolu_bul("yt-dlp.exe")
+        import yt_dlp
+        self.log_yaz(f"--- İndirme Başlıyor (v2.0) ---")
+        
         ffmpeg_exe = self.dosya_yolu_bul("ffmpeg.exe")
         kayit_yolu = self.kayit_yeri.get()
+        format_tipi = self.format_secimi.get()
+        out_tmpl = os.path.join(kayit_yolu, "%(title)s.%(ext)s")
 
-        komut = [yt_dlp_exe, url, "--ffmpeg-location", ffmpeg_exe, "--no-mtime"]
-        komut.extend(["-o", os.path.join(kayit_yolu, "%(title)s.%(ext)s")])
+        ydl_opts = {
+            'outtmpl': out_tmpl,
+            'ffmpeg_location': ffmpeg_exe,
+            'noplaylist': not self.playlist_modu,
+            'progress_hooks': [self.progress_hook],
+            'quiet': True,
+            'no_warnings': True,
+        }
 
-        if self.format_secimi.get() == "mp3":
+        if format_tipi == "mp3":
             self.log_yaz("Mod: Sadece Ses (MP3)")
-            komut.extend(["-x", "--audio-format", "mp3"])
+            ydl_opts.update({
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            })
         else:
             kalite = self.kalite_secimi.get()
             self.log_yaz(f"Mod: Video ({kalite}p)")
             if kalite == "2160":
-                komut.extend(["-f", f"bestvideo[height<={kalite}]+bestaudio/best[height<={kalite}]/best", "--merge-output-format", "mp4"])
+                format_str = f"bestvideo[height<={kalite}]+bestaudio/best[height<={kalite}]/best"
             else:
-                komut.extend(["-f", f"bestvideo[height<={kalite}][vcodec^=avc1]+bestaudio[ext=m4a]/best[ext=mp4]/best", "--merge-output-format", "mp4"])
-
-        indirilen_dosya_yolu = None
+                format_str = f"bestvideo[height<={kalite}][vcodec^=avc1]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+            
+            ydl_opts.update({
+                'format': format_str,
+                'merge_output_format': 'mp4',
+            })
 
         try:
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            process = subprocess.Popen(komut, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, startupinfo=startupinfo, creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0)
-
-            while True:
-                line = process.stdout.readline()
-                if not line and process.poll() is not None: break
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+            
+            if not self.iptal_bayragi:
+                # Dönüştürme Kontrolü
+                if self.donusturme_yapilsin_mi and self.son_indirilen_dosya and os.path.exists(self.son_indirilen_dosya):
+                    self.donusturme_islemi(self.son_indirilen_dosya, ffmpeg_exe)
                 
-                if line:
-                    line = line.strip()
-                    match = re.search(r"(\d+\.\d+)%", line)
-                    if match:
-                        self.progress['value'] = float(match.group(1))
-                        self.root.update_idletasks()
-                    
-                    if "Merger] Merging formats into" in line:
-                         parts = line.split('"')
-                         if len(parts) >= 2: indirilen_dosya_yolu = parts[1]
+                # Başarılı Bitiş UI
+                self.root.after(0, lambda: self.islem_tamamlandi_ui(kayit_yolu))
 
-                    if "Destination" in line and not "Merger" in line:
-                         parts = line.split(': ', 1)
-                         if len(parts) >= 2: indirilen_dosya_yolu = parts[1].strip()
-
-                    if "[download]" in line and "%" not in line: self.log_yaz(line)
-                    elif "Destination" in line: self.log_yaz(line)
-
-            if process.returncode == 0:
-                self.progress['value'] = 100
-                self.log_yaz("✅ İndirme Tamamlandı.")
-
-                if self.donusturme_yapilsin_mi and indirilen_dosya_yolu and os.path.exists(indirilen_dosya_yolu):
-                    self.donusturme_islemi(indirilen_dosya_yolu, ffmpeg_exe)
-                else:
-                    self.log_yaz("✅ İŞLEM BAŞARILI.")
-                    if self.klasor_ac_var.get(): os.startfile(kayit_yolu)
-                    messagebox.showinfo("Başarılı", "İşlem Tamamlandı!")
+        except Exception as e:
+            if "İptal Edildi" in str(e):
+                self.log_yaz("🛑 İşlem kullanıcı tarafından iptal edildi.")
+                self.progress['value'] = 0
+                self.root.after(0, self.buton_sifirla)
             else:
-                self.log_yaz("❌ HATA OLUŞTU.")
-        except Exception as e: self.log_yaz(f"Hata: {str(e)}")
-        
-        self.download_button.config(state='normal', text="İNDİRMEYİ BAŞLAT", bg="#0078D7")
+                self.log_yaz(f"❌ HATA: {str(e)}")
+                self.root.after(0, self.buton_sifirla)
+
+    def progress_hook(self, d):
+        if self.iptal_bayragi:
+            raise Exception("İptal Edildi")
+
+        if d['status'] == 'downloading':
+            try:
+                p = d.get('_percent_str', '0%').replace('%','')
+                self.progress['value'] = float(p)
+                self.root.update_idletasks()
+            except: pass
+            
+        elif d['status'] == 'finished':
+            self.son_indirilen_dosya = d.get('filename')
+            self.log_yaz("⬇️ İndirme bitti, son işlemler yapılıyor...")
 
     def donusturme_islemi(self, dosya_yolu, ffmpeg_exe):
-        self.log_yaz("⏳ DÖNÜŞTÜRME BAŞLIYOR (Bu işlem uzun sürebilir)...")
-        self.download_button.config(text="DÖNÜŞTÜRÜLÜYOR...")
-        self.progress.config(mode='indeterminate')
-        self.progress.start(10)
+        self.log_yaz("⏳ DÖNÜŞTÜRME BAŞLIYOR (MP4/H.264)...")
+        # UI Güncellemeleri
+        self.root.after(0, lambda: self.download_button.config(text="DÖNÜŞTÜRÜLÜYOR..."))
+        self.root.after(0, lambda: self.progress.config(mode='indeterminate'))
+        self.root.after(0, lambda: self.progress.start(10))
 
         klasor = os.path.dirname(dosya_yolu)
         dosya_adi = os.path.basename(dosya_yolu)
         yeni_dosya_adi = "CONVERTED_" + dosya_adi
         yeni_dosya_yolu = os.path.join(klasor, yeni_dosya_adi)
 
-        komut = [ffmpeg_exe, "-y", "-i", dosya_yolu, "-c:v", "libx264", "-preset", "fast", "-crf", "23", "-c:a", "copy", yeni_dosya_yolu]
+        komut = [
+            ffmpeg_exe, "-y", 
+            "-i", dosya_yolu, 
+            "-c:v", "libx264", "-preset", "fast", "-crf", "23", 
+            "-c:a", "copy", 
+            yeni_dosya_yolu
+        ]
 
         try:
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            # Thread içinde çalıştır ama konsol penceresi açma
             subprocess.run(komut, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=startupinfo, creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0)
 
             if os.path.exists(yeni_dosya_yolu):
                 os.remove(dosya_yolu) 
                 os.rename(yeni_dosya_yolu, dosya_yolu) 
-                self.log_yaz("✅ DÖNÜŞTÜRME TAMAMLANDI (Premiere Uyumlu).")
-            else: self.log_yaz("❌ Dönüştürme dosyası oluşturulamadı.")
-        except Exception as e: self.log_yaz(f"Dönüştürme Hatası: {str(e)}")
+                self.log_yaz("✅ DÖNÜŞTÜRME TAMAMLANDI.")
+            else:
+                self.log_yaz("❌ Dönüştürme dosyası oluşturulamadı.")
+        except Exception as e:
+            self.log_yaz(f"Dönüştürme Hatası: {str(e)}")
 
-        self.progress.stop()
-        self.progress.config(mode='determinate')
+        # Progress bar düzelt
+        self.root.after(0, lambda: self.progress.stop())
+        self.root.after(0, lambda: self.progress.config(mode='determinate'))
+
+    def islem_tamamlandi_ui(self, kayit_yolu):
+        self.buton_sifirla()
+        self.log_yaz("✅ İŞLEM BAŞARIYLA TAMAMLANDI.")
         self.progress['value'] = 100
-        if self.klasor_ac_var.get(): os.startfile(klasor)
-        messagebox.showinfo("Başarılı", "İndirme ve Dönüştürme Tamamlandı!")
+        messagebox.showinfo("Başarılı", "İndirme Tamamlandı!")
+        if self.klasor_ac_var.get(): 
+            try: os.startfile(kayit_yolu)
+            except: pass
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = VideoIndiriciV3(root)
+    app = YSVideoDownloader(root)
     root.mainloop()

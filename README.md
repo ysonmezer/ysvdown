@@ -1,40 +1,41 @@
-# 🎥 YS Video Downloader v1.0
+# 🎥 YS Video Downloader v2.0
 
-Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** tabanlı, açık kaynaklı ve kullanıcı dostu masaüstü uygulaması.
+Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** kütüphanesini kullanan, açık kaynaklı ve akıllı masaüstü uygulaması.
 
 ![Lisans](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.x-yellow.svg)
+![Status](https://img.shields.io/badge/status-stable-green.svg)
 
-## 🌟 Özellikler
+## 🌟 v2.0 Yenilikleri ve Özellikler
 
-* **Geniş Platform Desteği:** yt-dlp'nin desteklediği birçok popüler platform ile uyumludur.
-* **Akıllı Analiz:** Linki yapıştırdığınızda içeriği otomatik algılar.
-* **Format Seçenekleri:** 720p, 1080p, 4K Video ve Sadece Ses (MP3) dönüştürme.
-* **Kurgu Dostu:** Yüksek çözünürlüklü (VP9) videoları, video düzenleme yazılımlarıyla (örn: Premiere Pro) uyumlu formatlara (H.264) dönüştürme seçeneği.
-* **Performans:** Optimize edilmiş analiz motoru.
+* **📂 Playlist Desteği:** Oynatma listelerini otomatik algılar; ister tüm listeyi, ister tek videoyu indirebilirsiniz.
+* **⚡ Gömülü Motor:** Harici `yt-dlp.exe` dosyasına ihtiyaç duymaz, Python kütüphanesi olarak doğrudan çalışır (Daha hızlı analiz).
+* **🛑 İptal Seçeneği:** İndirme işlemini istediğiniz an durdurabilirsiniz.
+* **Kurgu Dostu:** 4K VP9 videoları, Premiere Pro uyumlu H.264 formatına dönüştürme seçeneği sunar.
+* **Format Seçenekleri:** MP4 (720p, 1080p, 4K) ve MP3 (Sadece Ses).
 
 ## 🚀 Kurulum ve Kullanım
 
-Bu proje taşınabilir (portable) yapıdadır. Kurulum gerektirmez.
+### Seçenek A: Hazır EXE (Windows Kullanıcıları İçin)
+Kurulum yapmadan hemen kullanmak için:
+1.  Sağ taraftaki **Releases** kısmından **v2.0 Stable** sürümünü indirin.
+2.  İndirdiğiniz `YS Video Downloader v2.0.exe` dosyasını çalıştırın.
+    * *Not: Programın çalışması için yanına `ffmpeg.exe` dosyasını koymayı unutmayın.*
 
-### Seçenek A: Hazır EXE (Windows)
-1.  **Releases** kısmından son sürümü (ZIP) indirin.
-2.  ZIP'ten çıkarın ve `ysvdown.exe` dosyasını çalıştırın.
-
-### Seçenek B: Kaynak Kod (Geliştiriciler)
+### Seçenek B: Kaynak Kod (Geliştiriciler İçin)
+Kodu incelemek veya geliştirmek isterseniz:
 1.  Depoyu klonlayın.
-2.  Gerekli kütüphaneleri yükleyin: `pip install -r requirements.txt`
-3.  Uygulamayı başlatın: `python main.py`
+2.  Gerekli kütüphaneleri yükleyin:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  Uygulamayı başlatın:
+    ```bash
+    python main.py
+    ```
 
-*(Not: Bu uygulama çalışmak için sisteminizde veya uygulama klasöründe `yt-dlp` ve `ffmpeg` binary dosyalarına ihtiyaç duyar.)*
-
-## ⚠️ Yasal Sorumluluk Reddi (Disclaimer)
-
-Bu yazılım sadece eğitim amaçlı ve kişisel arşivleme (fair use) için geliştirilmiştir. Telif hakkı ile korunan materyallerin izinsiz indirilmesi, dağıtılması veya ticari kullanımı, ilgili platformların Hizmet Koşullarına (ToS) aykırı olabilir.
-
-Kullanıcılar, bu yazılımı kullanarak indirdikleri içeriklerden ve bu içerikleri nasıl kullandıklarından tamamen kendileri sorumludur. Geliştirici, yazılımın kötüye kullanımından sorumlu tutulamaz.
+## ⚠️ Yasal Uyarı
+Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korunan materyallerin izinsiz indirilmesi ilgili platformların kurallarına aykırı olabilir. Sorumluluk kullanıcıya aittir.
 
 ## 📄 Lisans
-
-
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
