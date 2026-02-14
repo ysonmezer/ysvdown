@@ -16,13 +16,20 @@
 
 ## 🚀 Kurulum ve Kullanım
 
-### Seçenek A: Hazır EXE (Windows Kullanıcıları İçin)
-Kurulum yapmadan hemen kullanmak için:
-1.  Sağ taraftaki **Releases** kısmından **v2.0 Stable** sürümünü indirin.
-2.  İndirdiğiniz `YS Video Downloader v2.0.exe` dosyasını çalıştırın.
-    * *Not: Programın çalışması için yanına `ffmpeg.exe` dosyasını koymayı unutmayın.*
+### Seçenek A: Hazır Paket (Önerilen - ZIP)
+En sorunsuz deneyim için bu yöntemi kullanın. Gerekli tüm dosyalar (FFmpeg, İkon vb.) dahildir.
 
-### Seçenek B: Kaynak Kod (Geliştiriciler İçin)
+1.  Sağ taraftaki **Releases** kısmından **v2.0 Stable** altındaki `.zip` uzantılı dosyayı indirin.
+2.  İndirdiğiniz ZIP dosyasını bir klasöre çıkartın (Sağ tık -> Tümünü Ayıkla).
+3.  Klasörün içindeki `YS Video Downloader v2.0.exe` dosyasını çalıştırın.
+    * *(Ekstra bir işlem yapmanıza gerek yoktur.)*
+
+### Seçenek B: Sadece EXE (İleri Düzey)
+Eğer sadece `.exe` dosyasını indirirseniz:
+1.  Programın çalışabilmesi için sisteminizde `ffmpeg.exe` olduğundan emin olun.
+2.  `ffmpeg.exe` dosyasını, indirdiğiniz programın yanına koyun.
+
+### Seçenek C: Kaynak Kod (Geliştiriciler İçin)
 Kodu incelemek veya geliştirmek isterseniz:
 1.  Depoyu klonlayın.
 2.  Gerekli kütüphaneleri yükleyin:
@@ -38,4 +45,5 @@ Kodu incelemek veya geliştirmek isterseniz:
 Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korunan materyallerin izinsiz indirilmesi ilgili platformların kurallarına aykırı olabilir. Sorumluluk kullanıcıya aittir.
 
 ## 📄 Lisans
+
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
