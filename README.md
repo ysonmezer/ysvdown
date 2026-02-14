@@ -1,18 +1,17 @@
-# 🎥 YS Video Downloader v2.0
+# 🎥 YS Video Downloader v2.5
 
-Çeşitli video barındırma platformlarından medya içeriklerini indirmek için geliştirilmiş, **yt-dlp** kütüphanesini kullanan, açık kaynaklı, akıllı masaüstü uygulaması.
+Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** tabanlı, açık kaynaklı masaüstü uygulaması.
 
 ![Lisans](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.x-yellow.svg)
 ![Status](https://img.shields.io/badge/status-stable-green.svg)
 
-## 🌟 v2.0 Yenilikleri ve Özellikler
+## 🌟 v2.5 Yenilikleri
 
-* **📂 Playlist Desteği:** Oynatma listelerini otomatik algılar; ister tüm listeyi, ister tek videoyu indirebilirsiniz.
-* **⚡ Gömülü Motor:** Harici `yt-dlp.exe` dosyasına ihtiyaç duymaz, Python kütüphanesi olarak doğrudan çalışır (Daha hızlı analiz).
-* **🛑 İptal Seçeneği:** İndirme işlemini istediğiniz an durdurabilirsiniz.
-* **Kurgu Dostu:** 4K VP9 videoları, Premiere Pro uyumlu H.264 formatına dönüştürme seçeneği sunar.
-* **Format Seçenekleri:** MP4 (720p, 1080p, 4K) ve MP3 (Sadece Ses).
+* **🚀 Turbo Analiz:** Playlist tarama hızı %300 artırıldı.
+* **🎨 Akıllı Arayüz:** Playlist algılandığında yeşil renkli görsel bildirim.
+* **✨ UI Düzenlemeleri:** Butonlar simetrik hale getirildi, geçişlerdeki titreme (jumping) giderildi.
+* **🛠️ Hata Düzeltmeleri:** "0 Video" sayma hatası giderildi.
 
 ## 🚀 Kurulum ve Kullanım
 
@@ -44,6 +43,7 @@ Bu yazılım eğitim ve kişisel arşivleme amaçlıdır. Telif hakkı ile korun
 ## 📄 Lisans
 
 Bu proje [MIT Lisansı](LICENSE) ile lisanslanmıştır.
+
 
 
 
