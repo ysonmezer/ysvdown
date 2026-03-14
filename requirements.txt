@@ -1,2 +1,6 @@
-yt-dlp
-tk
+yt-dlp>=2024.3.10
+pyinstaller>=6.3.0
+mutagen>=1.47.0
+pycryptodome>=3.19.0
+websockets>=12.0
+brotli>=1.1.0
