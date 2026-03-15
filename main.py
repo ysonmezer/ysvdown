@@ -122,12 +122,16 @@ class YSVideoDownloader:
 
     def dosya_yolu_bul(self, dosya_adi):
         """Portable mod için dosya yolunu bulur"""
+        # macOS için ffmpeg.exe -> ffmpeg
+        if platform.system() == 'Darwin' and dosya_adi == 'ffmpeg.exe':
+            dosya_adi = 'ffmpeg'
+    
         if getattr(sys, 'frozen', False):
             # PyInstaller ile derlenmiş
             base_path = os.path.dirname(sys.executable)
         else:
-            # Normal Python scripti
-            base_path = os.path.dirname(os.path.abspath(__file__))
+            # Normal Python
+            base_path = os.path.dirname(__file__)
         return os.path.join(base_path, dosya_adi)
 
     def ffmpeg_kontrol(self):
