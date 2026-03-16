@@ -51,6 +51,21 @@ Desteklenen platformların tam listesi için: [yt-dlp siteler listesi](https://g
 
 **⚠️ Önemli:** Tüm dosyaları klasör içinde tutun!
 
+### **⚠️ Windows SmartScreen Uyarısı**
+
+İlk çalıştırmada Windows SmartScreen uyarısı görebilirsiniz.
+
+**Neden oluyor?**
+- Uygulama henüz yaygın değil
+- Dijital imza (code signing) yok
+- Normal bir durum, güvenlik sorunu değil
+
+**Çözüm:**
+1. "More info" ("Ek bilgi" / "Daha fazla bilgi") tıklayın
+2. "Run anyway" ("Yine de çalıştır") butonuna tıklayın
+
+**Güvenlik:** Bu %100 güvenli, açık kaynak bir uygulamadır. Tüm kaynak kod incelenebilir.
+
 **Windows Defender Uyarısı:** İlk çalıştırmada uyarı verebilir (False Positive).
 - Çözüm: `Windows Security → Protection History → Allow`
 
