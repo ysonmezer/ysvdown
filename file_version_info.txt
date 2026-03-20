@@ -1,0 +1,4 @@
+filevers=(2, 7, 0, 0),
+prodvers=(2, 7, 0, 0),
+StringStruct(u'FileVersion', u'2.7.0.0'),
+StringStruct(u'ProductVersion', u'2.7.0.0'),
