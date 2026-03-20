@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-# YS Video Downloader v2.6 - Defender-Optimized Build Spec
+# YS Video Downloader v2.7 - Defender-Optimized Build Spec
 # EXE adı ve ikon düzeltildi
 
 import sys
@@ -53,7 +53,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='YS Video Downloader v2.6',  # ✅ EXE adı burada belirleniyor
+    name='YS Video Downloader v2.7',  # ✅ EXE adı burada belirleniyor
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -78,5 +78,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name='YS Video Downloader v2.6',  # ✅ Klasör adı
+    name='YS Video Downloader v2.7',  # ✅ Klasör adı
 )
