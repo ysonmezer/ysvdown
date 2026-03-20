@@ -1,6 +1,15 @@
+# YS Video Downloader v2.7 - Gerekli Kütüphaneler
+
+# Ana bağımlılık
 yt-dlp>=2024.3.10
+
+# PyInstaller (build için)
 pyinstaller>=6.3.0
-mutagen>=1.47.0
-pycryptodome>=3.19.0
-websockets>=12.0
-brotli>=1.1.0
+
+# İsteğe bağlı - performans iyileştirmeleri
+mutagen>=1.47.0          # MP3 metadata desteği
+pycryptodome>=3.19.0     # Bazı sitelerin şifrelemesi için
+websockets>=12.0         # Bazı siteler için WebSocket desteği
+brotli>=1.1.0            # Sıkıştırma desteği
+
+# Not: tkinter Python ile birlikte gelir, ayrıca yüklemeye gerek yok
