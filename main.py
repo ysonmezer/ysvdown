@@ -11,7 +11,7 @@ import yt_dlp
 
 # ============================================================================
 # PROJE: YS Video Downloader (ysvdown)
-# SÜRÜM: v2.6 (Güvenlik & Performans İyileştirmeleri)
+# SÜRÜM: v2.7 (Güncelleme ve Performans İyileştirmeleri)
 # YAPIM: Python + Tkinter + yt-dlp
 # DEĞİŞİKLİKLER:
 #   - ✅ Static import (Defender bypass)
@@ -70,7 +70,7 @@ MAX_RETRIES = 3  # Başarısız istek tekrar sayısı
 class YSVideoDownloader:
     def __init__(self, root):
         self.root = root
-        self.root.title("YS Video Downloader v2.6")
+        self.root.title("YS Video Downloader v2.7")
         self.root.geometry("700x720")
         
         # --- STİL AYARLARI ---
@@ -90,6 +90,8 @@ class YSVideoDownloader:
         self.donusturme_yapilsin_mi = False
         self.playlist_modu = False
         self.iptal_bayragi = False
+        # yt-dlp güncelleme takibi
+        self.ytdlp_hata_sayaci = 0
         self.son_indirilen_dosya = None
         self.playlist_tespit_edildi = False
 
@@ -122,16 +124,12 @@ class YSVideoDownloader:
 
     def dosya_yolu_bul(self, dosya_adi):
         """Portable mod için dosya yolunu bulur"""
-        # macOS için ffmpeg.exe -> ffmpeg
-        if platform.system() == 'Darwin' and dosya_adi == 'ffmpeg.exe':
-            dosya_adi = 'ffmpeg'
-    
         if getattr(sys, 'frozen', False):
             # PyInstaller ile derlenmiş
             base_path = os.path.dirname(sys.executable)
         else:
-            # Normal Python
-            base_path = os.path.dirname(__file__)
+            # Normal Python scripti
+            base_path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(base_path, dosya_adi)
 
     def ffmpeg_kontrol(self):
@@ -169,65 +167,6 @@ class YSVideoDownloader:
         
         return True
 
-    # ========================================================================
-    # GÜNCELLEME FONKSİYONLARI
-    # ========================================================================
-
-    def ytdlp_guncelle(self):
-        """yt-dlp'yi günceller"""
-        cevap = messagebox.askyesno(
-            "yt-dlp Güncelleme",
-            "yt-dlp en son sürüme güncellenecek.\n\n"
-            "Bu işlem 1-2 dakika sürebilir.\n"
-            "Devam edilsin mi?"
-        )
-        
-        if not cevap:
-            return
-        
-        self.log_yaz("🔄 yt-dlp güncelleniyor...")
-        
-        # Thread'de çalıştır
-        threading.Thread(target=self._ytdlp_guncelleme_thread, daemon=True).start()
-    
-    def _ytdlp_guncelleme_thread(self):
-        """Arka planda yt-dlp günceller"""
-        try:
-            import subprocess
-            import sys
-            
-            # pip ile güncelle
-            cmd = [sys.executable, '-m', 'pip', 'install', '--upgrade', 'yt-dlp']
-            
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                startupinfo=self.subprocess_startupinfo,
-                creationflags=self.subprocess_flags
-            )
-            
-            if result.returncode == 0:
-                self.root.after(0, lambda: self.log_yaz("✅ yt-dlp başarıyla güncellendi!"))
-                self.root.after(0, lambda: messagebox.showinfo(
-                    "Güncelleme Başarılı",
-                    "yt-dlp en son sürüme güncellendi.\n\n"
-                    "Değişikliklerin tam olarak uygulanması için\n"
-                    "programı yeniden başlatmanız önerilir."
-                ))
-            else:
-                self.root.after(0, lambda: self.log_yaz(f"❌ Güncelleme hatası: {result.stderr}"))
-                self.root.after(0, lambda: messagebox.showerror(
-                    "Güncelleme Hatası",
-                    f"yt-dlp güncellenemedi.\n\n{result.stderr[:200]}"
-                ))
-                
-        except Exception as e:
-            self.root.after(0, lambda: self.log_yaz(f"❌ Hata: {str(e)}"))
-            self.root.after(0, lambda: messagebox.showerror(
-                "Hata",
-                f"Güncelleme sırasında hata oluştu:\n{str(e)}"
-            ))
 
     # ========================================================================
     # ARAYÜZ OLUŞTURMA
@@ -319,7 +258,7 @@ class YSVideoDownloader:
             cursor="hand2"
         )
         self.update_link.pack(side=tk.RIGHT, padx=15)
-        self.update_link.bind("<Button-1>", lambda e: self.ytdlp_guncelle())
+        self.update_link.bind("<Button-1>", lambda e: self.ytdlp_versiyon_kontrol())
         self.update_link.bind("<Enter>", lambda e: self.update_link.config(fg="#0078D7"))  # Hover efekti
         self.update_link.bind("<Leave>", lambda e: self.update_link.config(fg="#999999"))  # Normal renk
 
@@ -471,6 +410,17 @@ class YSVideoDownloader:
 
             self.root.after(0, lambda: self.analiz_basarili(metadata, is_playlist))
             
+        except Exception as e:
+            # Akıllı yt-dlp hata tespiti
+            error_msg = str(e).lower()
+            ytdlp_keywords = ['signature', 'extract', 'unsupported url', 
+                             'unable to download', 'http error 403', 'unavailable']
+            
+            if any(keyword in error_msg for keyword in ytdlp_keywords):
+                self.ytdlp_hata_sayaci += 1
+                if self.ytdlp_hata_sayaci >= 3:
+                    self.root.after(0, self.ytdlp_guncelleme_uyarisi)
+
         except Exception as e:
             hata_mesaji = str(e)
             self.root.after(0, lambda: self.analiz_hatali(hata_mesaji))
@@ -696,6 +646,16 @@ class YSVideoDownloader:
             self.root.after(0, self.buton_sifirla)
             
         except Exception as e:
+            # Akıllı yt-dlp hata tespiti
+            error_msg = str(e).lower()
+            ytdlp_keywords = ['signature', 'extract', 'unsupported url', 
+                             'unable to download', 'http error 403']
+            
+            if any(keyword in error_msg for keyword in ytdlp_keywords):
+                self.ytdlp_hata_sayaci += 1
+                if self.ytdlp_hata_sayaci >= 3:
+                    self.root.after(0, self.ytdlp_guncelleme_uyarisi)
+                    
             if self.iptal_bayragi:
                 self.root.after(0, lambda: self.log_yaz("🛑 İşlem kullanıcı tarafından iptal edildi."))
                 self.temizle_part_dosyalari(kayit_yolu)
@@ -836,6 +796,51 @@ class YSVideoDownloader:
         
         if self.klasor_ac_var.get(): 
             self.klasor_ac(kayit_yolu)
+
+    def ytdlp_guncelleme_uyarisi(self):
+        """3 hata sonrası yt-dlp güncelleme önerisi"""
+        cevap = messagebox.askyesno(
+            "yt-dlp Güncelleme Gerekebilir",
+            "Son indirmelerde tekrarlayan hatalar oluştu.\n\n"
+            "Bu genellikle yt-dlp'nin güncellenmesi gerektiğini gösterir.\n\n"
+            "Yeni sürümü kontrol etmek ister misiniz?"
+        )
+        
+        if cevap:
+            self.ytdlp_versiyon_kontrol()
+        
+        # Sayacı sıfırla
+        self.ytdlp_hata_sayaci = 0
+
+    def ytdlp_versiyon_kontrol(self):
+        """yt-dlp versiyonunu kontrol eder ve güncelleme önerir"""
+        try:
+            import urllib.request
+            import json
+            
+            # GitHub API'den son sürümü al
+            api_url = "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest"
+            with urllib.request.urlopen(api_url, timeout=5) as response:
+                data = json.loads(response.read())
+                latest_version = data['tag_name']
+            
+            # Şu anki sürüm
+            current_version = yt_dlp.version.__version__
+            
+            if latest_version != current_version:
+                messagebox.showinfo(
+                    "yt-dlp Güncelleme Mevcut",
+                    f"Şu anki sürüm: {current_version}\n"
+                    f"En son sürüm: {latest_version}\n\n"
+                    f"Güncellemek için YS Video Downloader'ın\n"
+                    f"yeni sürümünü indirin:\n\n"
+                    f"github.com/ysonmezer/ysvdown/releases"
+                )
+            else:
+                messagebox.showinfo("Güncel", f"yt-dlp güncel! (Sürüm: {current_version})")
+                
+        except Exception as e:
+            messagebox.showerror("Hata", f"Versiyon kontrolü başarısız:\n{str(e)}")
 
 # ============================================================================
 # PROGRAM BAŞLATMA
