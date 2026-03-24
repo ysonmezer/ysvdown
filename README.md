@@ -11,10 +11,14 @@
 <!-- Yukarıdaki resmi kendi screenshot'ınızla değiştirin -->
 
 ---
-
 ### **v2.7.1** (2026-03-24)
+#### 🍎 macOS Desteği
+- **Native .app bundle:** Terminal gerektirmez, çift tıkla çalıştır
+- **py2app ile build:** Daha stabil macOS uygulaması
+- **ffmpeg path düzeltmesi:** macOS uyumluluğu iyileştirildi
+
+### **v2.7** (2026-03-17)
 #### 🚀 Yeni Özellikler
-- **🎯 MacOS Güncellemesi:** `ysvdown_v2.7.1_macos.dmg` Native .app bundle
 - **🔔 Akıllı Güncelleme Uyarısı:** Tekrarlayan hatalar yt-dlp güncelleme önerisi gösterir
 - **📊 Versiyon Kontrolü:** Footer'dan yt-dlp sürüm kontrolü
 - **🎯 Hata Tespiti:** Platform değişikliklerini otomatik algılar
