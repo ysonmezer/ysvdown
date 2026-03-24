@@ -6,18 +6,14 @@
 
 ## 🚀 Kurulum ve Kullanım
 
-### 1. DMG'yi Açın
-İndirilen DMG dosyasına çift tıklayın.
+### **🍎 macOS**
 
-### 2. Terminal'i Açın
-- Spotlight (⌘ + Space) → "Terminal" yazın
-- Enter'a basın
+1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.7.1_macos.dmg` dosyasını indirin
+2. DMG'yi açın
+3. **YS Video Downloader.app** çift tıklayın
 
-### 3. Şu Komutları Çalıştırın
-```bash
-cd "/Volumes/YS Video Downloader v2.6"
-./YS\ Video\ Downloader\ v2.6
-```
+**İlk çalıştırmada güvenlik uyarısı:**
+- `System Preferences → Security & Privacy → "Open Anyway"`
 
 Program açılacak!
 
