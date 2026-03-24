@@ -1,4 +1,4 @@
-# 🎥 YS Video Downloader v2.7
+# 🎥 YS Video Downloader v2.7.1
 
 ![GitHub release](https://img.shields.io/github/v/release/ysonmezer/ysvdown?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
@@ -12,8 +12,9 @@
 
 ---
 
-### **v2.7** (2026-03-19)
+### **v2.7.1** (2026-03-24)
 #### 🚀 Yeni Özellikler
+- **🎯 MacOS Güncellemesi:** `ysvdown_v2.7.1_macos.dmg` Native .app bundle
 - **🔔 Akıllı Güncelleme Uyarısı:** Tekrarlayan hatalar yt-dlp güncelleme önerisi gösterir
 - **📊 Versiyon Kontrolü:** Footer'dan yt-dlp sürüm kontrolü
 - **🎯 Hata Tespiti:** Platform değişikliklerini otomatik algılar
@@ -43,7 +44,7 @@ Desteklenen platformların tam listesi için: [yt-dlp siteler listesi](https://g
 
 ---
 
-## 📥 **Kurulum ve Kullanım**
+## 📥 **Windows Kurulum ve Kullanım (Mac için README_MACOS.md) **
 
 ### **Son Kullanıcılar İçin (Portable - Kurulum Gerektirmez)**
 
