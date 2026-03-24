@@ -11,7 +11,7 @@ import yt_dlp
 
 # ============================================================================
 # PROJE: YS Video Downloader (ysvdown)
-# SÜRÜM: v2.7 (Güncelleme ve Performans İyileştirmeleri)
+# SÜRÜM: v2.7.1 (MacOS uyumluluğu için ffmpeg yolu güncellendi)
 # YAPIM: Python + Tkinter + yt-dlp
 # DEĞİŞİKLİKLER:
 #   - ✅ Static import (Defender bypass)
@@ -70,7 +70,7 @@ MAX_RETRIES = 3  # Başarısız istek tekrar sayısı
 class YSVideoDownloader:
     def __init__(self, root):
         self.root = root
-        self.root.title("YS Video Downloader v2.7")
+        self.root.title("YS Video Downloader v2.7.1")
         self.root.geometry("700x720")
         
         # --- STİL AYARLARI ---
@@ -124,6 +124,13 @@ class YSVideoDownloader:
 
     def dosya_yolu_bul(self, dosya_adi):
         """Portable mod için dosya yolunu bulur"""
+        # macOS için ffmpeg.exe -> ffmpeg
+        if platform.system() == 'Darwin':
+            if dosya_adi == 'ffmpeg.exe':
+                dosya_adi = 'ffmpeg'
+            elif dosya_adi == 'yt-dlp.exe':
+                dosya_adi = 'yt-dlp'
+
         if getattr(sys, 'frozen', False):
             # PyInstaller ile derlenmiş
             base_path = os.path.dirname(sys.executable)
