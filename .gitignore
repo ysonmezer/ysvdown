@@ -1,0 +1,13 @@
+__pycache__/
+build/
+dist/
+*.spec
+*.exe
+venv/
+ffmpeg.exe
+windows/ffmpeg.exe
+windows/dist/
+windows/build/
+macos/dist/
+macos/build/
+macos/ffmpeg
