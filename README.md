@@ -1,4 +1,4 @@
-# 🎥 YS Video Downloader v2.7.1
+# 🎥 YS Video Downloader v2.8
 
 ![GitHub release](https://img.shields.io/github/v/release/ysonmezer/ysvdown?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
@@ -7,17 +7,27 @@
 
 Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** tabanlı, açık kaynaklı masaüstü uygulaması.
 
-![Screenshot](https://via.placeholder.com/800x500/0078D7/FFFFFF?text=YS+Video+Downloader+v2.7)
+![Screenshot](https://via.placeholder.com/800x500/0078D7/FFFFFF?text=YS+Video+Downloader+v2.8)
 <!-- Yukarıdaki resmi kendi screenshot'ınızla değiştirin -->
 
 ---
-### **v2.7.1** (2026-03-24)
-#### 🍎 macOS Desteği
-- **Native .app bundle:** Terminal gerektirmez, çift tıkla çalıştır
-- **py2app ile build:** Daha stabil macOS uygulaması
-- **ffmpeg path düzeltmesi:** macOS uyumluluğu iyileştirildi
 
-### **v2.7** (2026-03-17)
+## 📝 **Değişiklik Geçmişi**
+
+### **v2.8** (2026-03-26)
+#### 🚀 Yeni Özellikler
+- **🍎 macOS UI İyileştirmesi:** Native buton görünümü, platform renk dili uyumu
+- **🔤 Font İyileştirmesi:** macOS'ta okunabilirlik için büyütülmüş font boyutları
+- **📁 Yeni Klasör Yapısı:** Platform dosyaları ayrı klasörlerde (`windows/`, `macos/`)
+
+#### 🔧 İyileştirmeler
+- `ffmpeg_kontrol()` platform-agnostic hale getirildi
+- `dosya_yolu_bul()` yeni klasör yapısını destekliyor
+- `ikon_yukle()` frozen/script mod ayrımı eklendi
+
+---
+
+### **v2.7** (2026-03-19)
 #### 🚀 Yeni Özellikler
 - **🔔 Akıllı Güncelleme Uyarısı:** Tekrarlayan hatalar yt-dlp güncelleme önerisi gösterir
 - **📊 Versiyon Kontrolü:** Footer'dan yt-dlp sürüm kontrolü
@@ -26,6 +36,34 @@
 #### 🔧 İyileştirmeler
 - Daha akıllı hata yönetimi
 - Kullanıcı bildirimleri iyileştirildi
+
+---
+
+### **v2.6** (2026-03-14)
+#### 🚀 Yeni Özellikler
+- Windows Defender optimizasyonu (false positive %70 ↓)
+- Dinamik playlist desteği
+- Platform bağımsızlığı (Windows/macOS/Linux)
+- İçerik oluşturucu adı ile otomatik klasörleme
+- Otomatik geçici dosya temizleme
+- Gelişmiş iptal mekanizması (custom logger)
+
+#### 🔧 İyileştirmeler
+- Thread-safe UI güncellemeleri
+- Bağımlılık varlık kontrolü
+- Kayıt yeri doğrulama
+- Güvenli dosya değiştirme
+- Footer'da minimal güncelleme linki
+
+---
+
+### **v2.5** (2026-01-15)
+- Turbo Analiz (playlist tarama %300 hız artışı)
+- Akıllı arayüz (yeşil playlist bildirimi)
+- UI düzenlemeleri (simetrik butonlar)
+- Hata düzeltmeleri
+
+---
 
 ### 🎯 **Genel Özellikler**
 - ✅ Tek video veya tüm playlist indirme
@@ -48,30 +86,38 @@ Desteklenen platformların tam listesi için: [yt-dlp siteler listesi](https://g
 
 ---
 
-## 📥 **Windows Kurulum ve Kullanım (Mac için README_MACOS.md) **
+## 📥 **Kurulum ve Kullanım**
 
 ### **Son Kullanıcılar İçin (Portable - Kurulum Gerektirmez)**
 
-1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.7_windows_portable.zip` dosyasını indirin
+#### Windows
+1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.8_windows_portable.zip` dosyasını indirin
 2. ZIP dosyasını istediğiniz bir klasöre çıkartın
-3. `YS Video Downloader v2.7.exe` dosyasını çalıştırın
+3. `YS Video Downloader v2.8.exe` dosyasını çalıştırın
 
-**⚠️ Önemli:** Tüm dosyaları klasör içinde tutun! Program çalışması için:
+**⚠️ Önemli:** Tüm dosyaları klasör içinde tutun!
 ```
-📂 YS Video Downloader v2.7/
- ┣ 📜 YS Video Downloader v2.7.exe  ← Bunu çalıştırın
+📂 YS Video Downloader v2.8/
+ ┣ 📜 YS Video Downloader v2.8.exe  ← Bunu çalıştırın
  ┣ ⚙️ ffmpeg.exe                    ← Gerekli
  ┣ 🖼️ logo.ico                      ← Gerekli
  ┗ 📂 _internal/                    ← Gerekli
 ```
 
+#### macOS
+1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.8_macos.dmg` dosyasını indirin
+2. DMG dosyasını açın, `YS Video Downloader.app` dosyasını `Applications` klasörüne sürükleyin
+3. İlk açılışta: Sağ tıklayın → **Aç** → **Aç** (Gatekeeper uyarısını geçmek için)
+
+---
+
 ### **Geliştiriciler İçin (Kaynak Kod)**
 
-#### Gereksinimler:
+#### Gereksinimler
 - Python 3.8 veya üzeri
 - pip paket yöneticisi
 
-#### Kurulum:
+#### Kurulum
 ```bash
 # 1. Depoyu klonlayın
 git clone https://github.com/ysonmezer/ysvdown.git
@@ -84,21 +130,62 @@ pip install -r requirements.txt
 python main.py
 ```
 
-#### Build (EXE Oluşturma):
-```bash
-# 1. Eski build'leri temizleyin
-rm -rf build dist
+#### Build — Windows (PowerShell)
+```powershell
+cd windows
 
-# 2. PyInstaller ile build edin
+# 1. Temizlik
+Remove-Item -Recurse -Force build, dist
+
+# 2. main.py'yi kopyala (symlink değil)
+Copy-Item ..\main.py .
+
+# 3. Build
 pyinstaller ysvdown.spec
 
-# 3. FFmpeg ve logo'yu kopyalayın
-cp ffmpeg.exe "dist/YS Video Downloader v2.7/"
-cp logo.ico "dist/YS Video Downloader v2.7/"
+# 4. FFmpeg ve logo kopyala
+Copy-Item ffmpeg.exe "dist\YS Video Downloader v2.8\"
+Copy-Item logo.ico "dist\YS Video Downloader v2.8\"
 
-# 4. Test edin
-cd "dist/YS Video Downloader v2.7"
-./YS\ Video\ Downloader\ v2.7.exe
+# 5. ZIP oluştur
+cd dist
+Compress-Archive -Path "YS Video Downloader v2.8" `
+  -DestinationPath "ysvdown_v2.8_windows_portable.zip" -Force
+
+# 6. Hash
+Get-FileHash ysvdown_v2.8_windows_portable.zip -Algorithm SHA256
+
+# 7. Temizlik
+Remove-Item ..\main.py
+```
+
+#### Build — macOS (Terminal)
+```bash
+cd macos
+
+# 1. Temizlik
+rm -rf build dist
+
+# 2. main.py'yi kopyala (symlink değil)
+cp ../main.py .
+
+# 3. Build (--no-strip zorunlu!)
+/usr/local/opt/python@3.11/bin/python3.11 setup.py py2app --no-strip
+
+# 4. ffmpeg kopyala
+cp ffmpeg dist/YS\ Video\ Downloader.app/Contents/MacOS/
+
+# 5. DMG oluştur
+hdiutil create -volname "YS Video Downloader v2.8" \
+  -srcfolder "dist/YS Video Downloader.app" \
+  -ov -format UDZO \
+  dist/ysvdown_v2.8_macos.dmg
+
+# 6. Hash
+shasum -a 256 dist/ysvdown_v2.8_macos.dmg
+
+# 7. Temizlik
+rm main.py
 ```
 
 ---
@@ -147,16 +234,9 @@ cd "dist/YS Video Downloader v2.7"
 3. İki seçenek sunulur:
    - **VİDEOYU İNDİR:** Sadece o videoyu indir
    - **TÜM LİSTEYİ İNDİR:** Tüm playlist'i indir
-4. İstediğinizi seçin
 
-### **3. Dinamik Playlistler**
-Program dinamik playlistleri (otomatik oluşturulan müzik listeleri, önerilen videolar vb.) de destekler. Tüm içerikler sırayla indirilir ve içerik oluşturucu adıyla klasörlendirilir.
-
-### **4. İptal Etme**
-İndirme sırasında "İPTAL ET" butonuna basarak işlemi durdurabilirsiniz. Program:
-- Mevcut videoyu tamamlar
-- Kalan videoları atlar
-- Geçici dosyaları otomatik temizler
+### **3. İptal Etme**
+İndirme sırasında "İPTAL ET" butonuna basarak işlemi durdurabilirsiniz. Program geçici dosyaları otomatik temizler.
 
 ---
 
@@ -166,7 +246,7 @@ Program dinamik playlistleri (otomatik oluşturulan müzik listeleri, önerilen 
 - **GUI Framework:** Tkinter
 - **Video İndirme:** yt-dlp
 - **Video İşleme:** FFmpeg
-- **Build Tool:** PyInstaller
+- **Build Tool:** PyInstaller (Windows) / py2app (macOS)
 - **Programlama Dili:** Python 3.11
 
 ### **Güvenlik Özellikleri**
@@ -174,26 +254,21 @@ Program dinamik playlistleri (otomatik oluşturulan müzik listeleri, önerilen 
 - Bağlantı limitleri (spam önleme)
 - Thread-safe UI güncellemeleri
 - Güvenli dosya işlemleri (veri kaybı önleme)
-- Bağımlılık ve kayıt yeri kontrolü
 
 ### **Performans İyileştirmeleri**
 - Turbo playlist analizi (%300 hız artışı)
 - Asenkron indirme işlemleri
 - Minimal bellek kullanımı
-- Akıllı önbellekleme
 
 ---
 
 ## ⚠️ **Yasal Uyarı**
 
-Bu yazılım **eğitim ve kişisel arşivleme** amaçlıdır. 
+Bu yazılım **eğitim ve kişisel arşivleme** amaçlıdır.
 
-**Önemli:**
 - Telif hakkı ile korunan materyallerin izinsiz indirilmesi yasalara aykırıdır
 - İçerik oluşturucuların haklarına saygı gösterin
-- Ticari kullanım için içerik sahiplerinden izin alın
 - Kullandığınız platformların hizmet şartlarına uyun
-- İndirdiğiniz içeriği yeniden dağıtmayın
 
 **Kullanıcı bu yazılımı kullanarak tüm sorumlulukları kabul eder.**
 
@@ -201,76 +276,27 @@ Bu yazılım **eğitim ve kişisel arşivleme** amaçlıdır.
 
 ## 🐛 **Bilinen Sorunlar ve Çözümler**
 
-### **1. "Bağımlılık bulunamadı" hatası**
+### **1. "FFmpeg bulunamadı" hatası**
 **Çözüm:** FFmpeg dosyasının program klasöründe olduğundan emin olun.
 
 ### **2. "Kayıt klasörüne yazma izni yok"**
 **Çözüm:** Farklı bir klasör seçin veya programı yönetici olarak çalıştırın.
 
-### **3. İndirme çok yavaş**
-**Çözüm:** İnternet bağlantınızı kontrol edin. Kalite ayarını düşürün (720p deneyin).
-
-### **4. 4K video oynatılamıyor**
-**Çözüm:** VLC Player kullanın veya VP9 codec desteği olan bir oynatıcı seçin.
-
-### **5. Belirli bir platform çalışmıyor**
+### **3. Belirli bir platform çalışmıyor**
 **Çözüm:** yt-dlp güncellemesi gerekebilir. Footer'daki "yt-dlp güncelle" linkini kullanın.
+
+### **4. macOS — "Uygulama açılamıyor" uyarısı**
+**Çözüm:** Sağ tıklayın → **Aç** → **Aç** (ilk açılışta bir kez yeterli).
 
 ---
 
 ## 🤝 **Katkıda Bulunma**
-
-Katkılarınızı bekliyoruz! 
-
-### **Nasıl Katkıda Bulunabilirsiniz:**
 
 1. **Fork** yapın
 2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
 3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
 4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
 5. **Pull Request** açın
-
-### **Katkı Alanları:**
-- 🐛 Bug düzeltmeleri
-- ✨ Yeni özellikler
-- 📝 Dokümantasyon iyileştirmeleri
-- 🌍 Çeviri (i18n)
-- 🎨 UI/UX geliştirmeleri
-- 🔌 Platform desteği genişletme
-
----
-
-## 📝 **Değişiklik Geçmişi**
-
-### **v2.6** (2026-03-14)
-#### 🚀 Yeni Özellikler
-- Windows Defender optimizasyonu (false positive %70 ↓)
-- Dinamik playlist desteği
-- Platform bağımsızlığı (Windows/macOS/Linux)
-- İçerik oluşturucu adı ile otomatik klasörleme
-- Otomatik geçici dosya temizleme
-- Gelişmiş iptal mekanizması (custom logger)
-
-#### 🔧 İyileştirmeler
-- Thread-safe UI güncellemeleri
-- Bağımlılık varlık kontrolü
-- Kayıt yeri doğrulama
-- Güvenli dosya değiştirme
-- Footer'da minimal güncelleme linki
-
-#### 🐛 Düzeltmeler
-- Playlist bilgisi kesik görünme
-- İptal butonunun geç yanıt vermesi
-- Geçici dosyaların kalması
-- Playlist sayım hataları
-
----
-
-### **v2.5** (2026-01-15)
-- Turbo Analiz (playlist tarama %300 hız artışı)
-- Akıllı arayüz (yeşil playlist bildirimi)
-- UI düzenlemeleri (simetrik butonlar)
-- Hata düzeltmeleri
 
 ---
 
@@ -306,33 +332,9 @@ SOFTWARE.
 
 ## 💬 **Destek ve İletişim**
 
-### **Sorun Bildirimi**
-Bir hata mı buldunuz? [Issue açın](https://github.com/ysonmezer/ysvdown/issues/new)
-
-### **Özellik İsteği**
-Yeni bir özellik mi istiyorsunuz? [Feature request](https://github.com/ysonmezer/ysvdown/issues/new?labels=enhancement)
-
-### **Tartışma**
-Genel sorular için [Discussions](https://github.com/ysonmezer/ysvdown/discussions) kullanın
-
-### **İletişim**
+- **Sorun Bildirimi:** [Issue açın](https://github.com/ysonmezer/ysvdown/issues/new)
+- **Özellik İsteği:** [Feature request](https://github.com/ysonmezer/ysvdown/issues/new?labels=enhancement)
 - **GitHub:** [@ysonmezer](https://github.com/ysonmezer)
-- **E-posta:** your-email@example.com *(opsiyonel)*
-
----
-
-## 🌟 **Yıldız Verin!**
-
-Bu projeyi beğendiyseniz ⭐ vermeyi unutmayın!
-
----
-
-## 📊 **İstatistikler**
-
-![GitHub stars](https://img.shields.io/github/stars/ysonmezer/ysvdown?style=social)
-![GitHub forks](https://img.shields.io/github/forks/ysonmezer/ysvdown?style=social)
-![GitHub issues](https://img.shields.io/github/issues/ysonmezer/ysvdown)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/ysonmezer/ysvdown)
 
 ---
 
@@ -340,8 +342,8 @@ Bu projeyi beğendiyseniz ⭐ vermeyi unutmayın!
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Harika video indirme kütüphanesi
 - [FFmpeg](https://ffmpeg.org/) - Güçlü multimedia framework
-- [PyInstaller](https://www.pyinstaller.org/) - Python uygulamalarını paketleme
-- Tüm katkıda bulunanlara ve kullanıcılara ❤️
+- [PyInstaller](https://www.pyinstaller.org/) - Python uygulamalarını paketleme (Windows)
+- [py2app](https://py2app.readthedocs.io/) - Python uygulamalarını paketleme (macOS)
 
 ---
 

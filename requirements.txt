@@ -1,10 +1,11 @@
-# YS Video Downloader v2.7 - Gerekli Kütüphaneler
+# YS Video Downloader v2.8 - Gerekli Kütüphaneler
 
 # Ana bağımlılık
-yt-dlp>=2024.3.10
+yt-dlp>=2026.03.17
 
-# PyInstaller (build için)
-pyinstaller>=6.3.0
+# Build araçları
+pyinstaller>=6.3.0       # Windows build
+py2app>=0.28.10          # macOS build
 
 # İsteğe bağlı - performans iyileştirmeleri
 mutagen>=1.47.0          # MP3 metadata desteği

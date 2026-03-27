@@ -11,11 +11,11 @@ import yt_dlp
 
 # ============================================================================
 # PROJE: YS Video Downloader (ysvdown)
-# SÜRÜM: v2.7.1 (MacOS uyumluluğu için ffmpeg yolu güncellendi)
+# SÜRÜM: v2.8 (macOS UI İyileştirmeleri)
 # YAPIM: Python + Tkinter + yt-dlp
 # DEĞİŞİKLİKLER:
 #   - ✅ Static import (Defender bypass)
-#   - ✅ FFmpeg varlık kontrolü
+#   - ✅ FFmpeg varlık kontrolü (platform-agnostic)
 #   - ✅ Platform bağımsız klasör açma
 #   - ✅ Güvenli dosya değiştirme
 #   - ✅ Thread-safe UI güncellemeleri
@@ -24,6 +24,8 @@ import yt_dlp
 #   - ✅ Bağlantı limitleri (Defender için)
 #   - ✅ Magic numbers sabitler olarak tanımlandı
 #   - ✅ İptal mekanizması iyileştirildi
+#   - ✅ macOS buton renk/kontrast düzeltmesi (v2.8)
+#   - ✅ macOS font büyüklükleri iyileştirildi (v2.8)
 # ============================================================================
 
 # === ÖZEL EXCEPTION ===
@@ -67,11 +69,30 @@ SLEEP_INTERVAL = 1  # İstekler arası bekleme (saniye)
 MAX_SLEEP_INTERVAL = 3  # Maksimum bekleme
 MAX_RETRIES = 3  # Başarısız istek tekrar sayısı
 
+# === PLATFORM ===
+IS_MACOS = platform.system() == 'Darwin'
+
+# macOS: native buton (bg yok), renkli bold metin
+# Windows: renkli bg, beyaz metin — mevcut davranış korunur
+def buton_renk(renk, fg="white"):
+    """Platform'a göre buton renk config'i döner"""
+    if IS_MACOS:
+        return {"fg": renk, "font": ("Segoe UI", 13, "bold")}
+    else:
+        return {"bg": renk, "fg": fg, "font": ("Segoe UI", 12, "bold")}
+
+def buton_disabled_renk():
+    """Disabled buton için platform'a göre config"""
+    if IS_MACOS:
+        return {"fg": "#aaaaaa", "font": ("Segoe UI", 13, "bold")}
+    else:
+        return {"bg": "#cccccc", "fg": "white", "font": ("Segoe UI", 12, "bold")}
+
 class YSVideoDownloader:
     def __init__(self, root):
         self.root = root
-        self.root.title("YS Video Downloader v2.7.1")
-        self.root.geometry("700x720")
+        self.root.title("YS Video Downloader v2.8")
+        self.root.geometry("700x740" if IS_MACOS else "700x720")
         
         # --- STİL AYARLARI ---
         self.style = ttk.Style()
@@ -115,9 +136,17 @@ class YSVideoDownloader:
     
     def ikon_yukle(self):
         """Program ikonunu yükler"""
+        if IS_MACOS:
+            return  # macOS'ta icon bundle'a gömülü, ayrıca set etmeye gerek yok
+
+        # Windows: hem script hem frozen modda pencere ikonunu set et
         icon_path = self.dosya_yolu_bul("logo.ico")
+        if not os.path.exists(icon_path) and getattr(sys, 'frozen', False):
+            # Frozen modda executable'ın yanında ara
+            icon_path = os.path.join(os.path.dirname(sys.executable), "logo.ico")
+
         if os.path.exists(icon_path):
-            try: 
+            try:
                 self.root.iconbitmap(icon_path)
             except Exception as e:
                 print(f"⚠️ İkon yüklenemedi: {e}")
@@ -125,29 +154,32 @@ class YSVideoDownloader:
     def dosya_yolu_bul(self, dosya_adi):
         """Portable mod için dosya yolunu bulur"""
         # macOS için ffmpeg.exe -> ffmpeg
-        if platform.system() == 'Darwin':
+        if IS_MACOS:
             if dosya_adi == 'ffmpeg.exe':
                 dosya_adi = 'ffmpeg'
             elif dosya_adi == 'yt-dlp.exe':
                 dosya_adi = 'yt-dlp'
 
         if getattr(sys, 'frozen', False):
-            # PyInstaller ile derlenmiş
+            # Build alınmış mod: executable'ın yanında
             base_path = os.path.dirname(sys.executable)
         else:
-            # Normal Python scripti
-            base_path = os.path.dirname(os.path.abspath(__file__))
+            # Script modu: platform alt klasörü (windows/ veya macos/)
+            root_dir = os.path.dirname(os.path.abspath(__file__))
+            platform_klasor = 'macos' if IS_MACOS else 'windows'
+            base_path = os.path.join(root_dir, platform_klasor)
+
         return os.path.join(base_path, dosya_adi)
 
     def ffmpeg_kontrol(self):
-        """FFmpeg varlığını kontrol eder"""
+        """FFmpeg varlığını kontrol eder (platform-agnostic)"""
         ffmpeg_exe = self.dosya_yolu_bul("ffmpeg.exe")
         if not os.path.exists(ffmpeg_exe):
             self.log_yaz(f"❌ FFmpeg bulunamadı: {ffmpeg_exe}")
             messagebox.showerror(
                 "FFmpeg Eksik",
-                "ffmpeg.exe bulunamadı!\n\n"
-                "Program klasöründe ffmpeg.exe olmalı:\n"
+                f"ffmpeg{'  ' if IS_MACOS else '.exe'} bulunamadı!\n\n"
+                "Program klasöründe ffmpeg olmalı:\n"
                 f"{os.path.dirname(ffmpeg_exe)}\n\n"
                 "Lütfen dosyaları doğru klasörden çalıştırın."
             )
@@ -180,50 +212,59 @@ class YSVideoDownloader:
     # ========================================================================
 
     def arayuz_olustur(self):
+        _lbl_font     = ("Segoe UI", 12 if IS_MACOS else 9)
+        _lbl_bold     = ("Segoe UI", 12 if IS_MACOS else 9, "bold")
+        _lbl_underline= ("Segoe UI", 12 if IS_MACOS else 9, "underline")
+        _entry_font   = ("Segoe UI", 12 if IS_MACOS else 10)
+
         # 1. Kaynak Bölümü
-        lbl_frame_url = tk.LabelFrame(self.root, text="Kaynak", font=("Segoe UI", 9, "bold"), padx=10, pady=10)
+        lbl_frame_url = tk.LabelFrame(self.root, text="Kaynak", font=_lbl_bold, padx=10, pady=10)
         lbl_frame_url.pack(padx=15, pady=10, fill="x")
         lbl_frame_url.columnconfigure(1, weight=1)
 
-        tk.Label(lbl_frame_url, text="Video Linki:", font=("Segoe UI", 9)).grid(row=0, column=0, sticky="w")
-        self.url_entry = tk.Entry(lbl_frame_url, textvariable=self.url_var, font=("Segoe UI", 10))
+        tk.Label(lbl_frame_url, text="Video Linki:", font=_lbl_font).grid(row=0, column=0, sticky="w")
+        self.url_entry = tk.Entry(lbl_frame_url, textvariable=self.url_var, font=_entry_font)
         self.url_entry.grid(row=0, column=1, padx=10, sticky="ew")
         tk.Button(lbl_frame_url, text="Yapıştır", command=self.pano_yapistir, bg="#e1e1e1", width=10).grid(row=0, column=2)
 
         # Analiz Durum Label'ı
-        self.lbl_analiz_durum = tk.Label(lbl_frame_url, text="", font=("Segoe UI", 9), fg="#666666", anchor="w")
+        self.lbl_analiz_durum = tk.Label(lbl_frame_url, text="", font=_lbl_font, fg="#666666", anchor="w")
         self.lbl_analiz_durum.grid(row=1, column=1, sticky="ew", padx=10, pady=(5,0))
 
-        tk.Label(lbl_frame_url, text="Kayıt Yeri:", font=("Segoe UI", 9)).grid(row=2, column=0, sticky="w", pady=(20, 10))
-        self.path_entry = tk.Entry(lbl_frame_url, textvariable=self.kayit_yeri, font=("Segoe UI", 8), state="readonly")
+        tk.Label(lbl_frame_url, text="Kayıt Yeri:", font=_lbl_font).grid(row=2, column=0, sticky="w", pady=(20, 10))
+        self.path_entry = tk.Entry(lbl_frame_url, textvariable=self.kayit_yeri, font=("Segoe UI", 10 if IS_MACOS else 8), state="readonly")
         self.path_entry.grid(row=2, column=1, padx=10, sticky="ew", pady=(20, 10))
         tk.Button(lbl_frame_url, text="Gözat", command=self.klasor_sec, bg="#e1e1e1", width=10).grid(row=2, column=2, pady=(20, 10))
 
         # 2. Ayarlar Bölümü
-        lbl_frame_settings = tk.LabelFrame(self.root, text="İndirme Ayarları", font=("Segoe UI", 9, "bold"), padx=10, pady=10)
+        lbl_frame_settings = tk.LabelFrame(self.root, text="İndirme Ayarları", font=_lbl_bold, padx=10, pady=10)
         lbl_frame_settings.pack(padx=15, fill="x")
 
-        tk.Label(lbl_frame_settings, text="Biçim Seçiniz:", font=("Segoe UI", 9, "underline")).grid(row=0, column=0, sticky="w", pady=(0,5))
-        tk.Radiobutton(lbl_frame_settings, text="Video (MP4)", variable=self.format_secimi, value="video", command=self.arayuz_guncelle).grid(row=1, column=0, sticky="w")
-        tk.Radiobutton(lbl_frame_settings, text="Sadece Ses (MP3)", variable=self.format_secimi, value="mp3", command=self.arayuz_guncelle).grid(row=2, column=0, sticky="w")
+        tk.Label(lbl_frame_settings, text="Biçim Seçiniz:", font=_lbl_underline).grid(row=0, column=0, sticky="w", pady=(0,5))
+        tk.Radiobutton(lbl_frame_settings, text="Video (MP4)", variable=self.format_secimi, value="video", command=self.arayuz_guncelle, font=_lbl_font).grid(row=1, column=0, sticky="w")
+        tk.Radiobutton(lbl_frame_settings, text="Sadece Ses (MP3)", variable=self.format_secimi, value="mp3", command=self.arayuz_guncelle, font=_lbl_font).grid(row=2, column=0, sticky="w")
 
-        tk.Label(lbl_frame_settings, text="Video Kalitesi:", font=("Segoe UI", 9, "underline")).grid(row=0, column=1, sticky="w", padx=40, pady=(0,5))
-        self.rb_720 = tk.Radiobutton(lbl_frame_settings, text="720p (HD)", variable=self.kalite_secimi, value="720", state="disabled")
+        tk.Label(lbl_frame_settings, text="Video Kalitesi:", font=_lbl_underline).grid(row=0, column=1, sticky="w", padx=40, pady=(0,5))
+        self.rb_720 = tk.Radiobutton(lbl_frame_settings, text="720p (HD)", variable=self.kalite_secimi, value="720", state="disabled", font=_lbl_font)
         self.rb_720.grid(row=1, column=1, sticky="w", padx=40)
-        self.rb_1080 = tk.Radiobutton(lbl_frame_settings, text="1080p (FHD)", variable=self.kalite_secimi, value="1080", state="disabled")
+        self.rb_1080 = tk.Radiobutton(lbl_frame_settings, text="1080p (FHD)", variable=self.kalite_secimi, value="1080", state="disabled", font=_lbl_font)
         self.rb_1080.grid(row=2, column=1, sticky="w", padx=40)
-        self.rb_4k = tk.Radiobutton(lbl_frame_settings, text="4K (UHD)", variable=self.kalite_secimi, value="2160", state="disabled")
+        self.rb_4k = tk.Radiobutton(lbl_frame_settings, text="4K (UHD)", variable=self.kalite_secimi, value="2160", state="disabled", font=_lbl_font)
         self.rb_4k.grid(row=3, column=1, sticky="w", padx=40)
 
-        tk.Checkbutton(lbl_frame_settings, text="İndirme bitince klasörü aç", variable=self.klasor_ac_var).grid(row=4, column=0, columnspan=2, sticky="w", pady=(10,0))
+        tk.Checkbutton(lbl_frame_settings, text="İndirme bitince klasörü aç", variable=self.klasor_ac_var, font=_lbl_font).grid(row=4, column=0, columnspan=2, sticky="w", pady=(10,0))
 
         # 3. Aksiyon Butonları
         self.frame_action = tk.Frame(self.root)
         self.frame_action.pack(pady=15, padx=15, fill="x")
         
         # A) Tek Buton
-        self.download_button = tk.Button(self.frame_action, text="İNDİR", state="disabled", command=lambda: self.indirmeyi_baslat(playlist_tercihi=False), 
-                                         bg="#cccccc", fg="white", font=("Segoe UI", 12, "bold"), height=2, cursor="hand2")
+        self.download_button = tk.Button(
+            self.frame_action, text="İNDİR", state="disabled",
+            command=lambda: self.indirmeyi_baslat(playlist_tercihi=False),
+            height=2, cursor="hand2",
+            **buton_disabled_renk()
+        )
         self.download_button.pack(fill="x")
 
         # B) Playlist Butonları (GRID SİSTEMİ)
@@ -231,14 +272,20 @@ class YSVideoDownloader:
         self.frame_playlist_btns.columnconfigure(0, weight=1, uniform="group1")
         self.frame_playlist_btns.columnconfigure(1, weight=1, uniform="group1")
         
-        self.btn_tek_indir = tk.Button(self.frame_playlist_btns, text="VİDEOYU İNDİR", 
-                                       command=lambda: self.indirmeyi_baslat(playlist_tercihi=False),
-                                       bg="#0078D7", fg="white", font=("Segoe UI", 12, "bold"), height=2, cursor="hand2")
+        self.btn_tek_indir = tk.Button(
+            self.frame_playlist_btns, text="VİDEOYU İNDİR",
+            command=lambda: self.indirmeyi_baslat(playlist_tercihi=False),
+            height=2, cursor="hand2",
+            **buton_renk("#0078D7")
+        )
         self.btn_tek_indir.grid(row=0, column=0, sticky="ew", padx=(0, 5))
 
-        self.btn_playlist_indir = tk.Button(self.frame_playlist_btns, text="TÜM LİSTEYİ İNDİR", 
-                                            command=lambda: self.indirmeyi_baslat(playlist_tercihi=True),
-                                            bg="#28a745", fg="white", font=("Segoe UI", 12, "bold"), height=2, cursor="hand2")
+        self.btn_playlist_indir = tk.Button(
+            self.frame_playlist_btns, text="TÜM LİSTEYİ İNDİR",
+            command=lambda: self.indirmeyi_baslat(playlist_tercihi=True),
+            height=2, cursor="hand2",
+            **buton_renk("#28a745")
+        )
         self.btn_playlist_indir.grid(row=0, column=1, sticky="ew", padx=(5, 0))
 
         # Progress Bar
@@ -246,8 +293,8 @@ class YSVideoDownloader:
         self.progress.pack(pady=(0, 10), padx=15, fill="x")
 
         # 4. Log Alanı
-        tk.Label(self.root, text="İşlem Kayıtları:", font=("Segoe UI", 8)).pack(pady=(5,0))
-        self.log_text = scrolledtext.ScrolledText(self.root, height=10, state='disabled', font=("Consolas", 8))
+        tk.Label(self.root, text="İşlem Kayıtları:", font=("Segoe UI", 10 if IS_MACOS else 8)).pack(pady=(5,0))
+        self.log_text = scrolledtext.ScrolledText(self.root, height=10, state='disabled', font=("Consolas", 10 if IS_MACOS else 8))
         self.log_text.pack(padx=15, pady=5, fill="both", expand=True)
 
         # Footer
@@ -290,7 +337,7 @@ class YSVideoDownloader:
         """UI'yi başlangıç durumuna getirir"""
         self.frame_playlist_btns.pack_forget()
         self.download_button.pack(fill="x")
-        self.download_button.config(state="disabled", text="İNDİR", bg="#cccccc")
+        self.download_button.config(state="disabled", text="İNDİR", **buton_disabled_renk())
         
         self.rb_720.config(state="disabled")
         self.rb_1080.config(state="disabled")
@@ -331,7 +378,7 @@ class YSVideoDownloader:
         else:
             self.frame_playlist_btns.pack_forget()
             self.download_button.pack(fill="x")
-            self.download_button.config(state='normal', text="İNDİRMEYİ BAŞLAT", bg="#0078D7")
+            self.download_button.config(state='normal', text="İNDİRMEYİ BAŞLAT", **buton_renk("#0078D7"))
 
     def arayuz_guncelle(self):
         """Format değiştiğinde arayüzü günceller"""
@@ -365,7 +412,7 @@ class YSVideoDownloader:
             return
 
         self.lbl_analiz_durum.config(text="Analiz ediliyor...", fg="#666666")
-        self.download_button.config(text="ANALİZ EDİLİYOR...", bg="#999999")
+        self.download_button.config(text="ANALİZ EDİLİYOR...", **buton_renk("#999999"))
         
         threading.Thread(target=self.analiz_thread, args=(url,), daemon=True).start()
 
@@ -474,7 +521,7 @@ class YSVideoDownloader:
             
             self.frame_playlist_btns.pack_forget()
             self.download_button.pack(fill="x")
-            self.download_button.config(state="normal", text="İNDİRMEYİ BAŞLAT", bg="#0078D7")
+            self.download_button.config(state="normal", text="İNDİRMEYİ BAŞLAT", **buton_renk("#0078D7"))
         
         # Kalite Seçenekleri
         formats = metadata.get('formats', [])
@@ -540,7 +587,7 @@ class YSVideoDownloader:
             except Exception as e:
                 self.log_yaz(f"⚠️ 4K format kontrolü başarısız: {e}")
 
-        self.download_button.config(text="İPTAL ET ❌", bg="#d9534f", state='normal')
+        self.download_button.config(text="İPTAL ET ❌", state='normal', **buton_renk("#d9534f"))
         self.progress['value'] = 0
         threading.Thread(target=self.indir_gorevi, args=(url,), daemon=True).start()
 
@@ -726,7 +773,7 @@ class YSVideoDownloader:
     def donusturme_islemi(self, dosya_yolu, ffmpeg_exe):
         """VP9 videosunu H.264 formatına dönüştürür"""
         self.log_yaz("⏳ DÖNÜŞTÜRME BAŞLIYOR (MP4/H.264)...")
-        self.root.after(0, lambda: self.download_button.config(text="DÖNÜŞTÜRÜLÜYOR..."))
+        self.root.after(0, lambda: self.download_button.config(text="DÖNÜŞTÜRÜLÜYOR...", **buton_renk("#999999")))
         self.root.after(0, lambda: self.progress.config(mode='indeterminate'))
         self.root.after(0, lambda: self.progress.start(PROGRESS_ANIMATION_SPEED))
 
