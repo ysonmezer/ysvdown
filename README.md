@@ -132,23 +132,28 @@ python main.py
 
 #### Build — Windows (PowerShell)
 ```powershell
+# Önce bir kez: build çıktıları için OneDrive dışında klasör oluştur
+mkdir C:\ysvdown_builds\windows
+
 cd windows
 
 # 1. Temizlik
-Remove-Item -Recurse -Force build, dist
+Remove-Item -Recurse -Force build, dist -ErrorAction SilentlyContinue
 
 # 2. main.py'yi kopyala (symlink değil)
 Copy-Item ..\main.py .
 
 # 3. Build
-pyinstaller ysvdown.spec
+pyinstaller ysvdown.spec `
+  --distpath C:\ysvdown_builds\windows\dist `
+  --workpath C:\ysvdown_builds\windows\build
 
 # 4. FFmpeg ve logo kopyala
-Copy-Item ffmpeg.exe "dist\YS Video Downloader v2.8\"
-Copy-Item logo.ico "dist\YS Video Downloader v2.8\"
+Copy-Item ffmpeg.exe "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.8\"
+Copy-Item logo.ico "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.8\"
 
 # 5. ZIP oluştur
-cd dist
+cd C:\ysvdown_builds\windows\dist
 Compress-Archive -Path "YS Video Downloader v2.8" `
   -DestinationPath "ysvdown_v2.8_windows_portable.zip" -Force
 
@@ -156,7 +161,8 @@ Compress-Archive -Path "YS Video Downloader v2.8" `
 Get-FileHash ysvdown_v2.8_windows_portable.zip -Algorithm SHA256
 
 # 7. Temizlik
-Remove-Item ..\main.py
+cd ..\..\..
+Remove-Item windows\main.py
 ```
 
 #### Build — macOS (Terminal)
