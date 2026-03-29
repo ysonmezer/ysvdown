@@ -14,7 +14,7 @@
 
 ## 📝 **Değişiklik Geçmişi**
 
-### **v2.8** (2026-03-26)
+### **v2.8** (2026-03-30)
 #### 🚀 Yeni Özellikler
 - **🍎 macOS UI İyileştirmesi:** Native buton görünümü, platform renk dili uyumu
 - **🔤 Font İyileştirmesi:** macOS'ta okunabilirlik için büyütülmüş font boyutları
