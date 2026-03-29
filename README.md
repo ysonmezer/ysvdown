@@ -161,28 +161,42 @@ Remove-Item ..\main.py
 
 #### Build — macOS (Terminal)
 ```bash
+# Önce bir kez: build çıktıları için OneDrive dışında klasör oluştur
+mkdir -p ~/ysvdown_builds/macos
+
 cd macos
 
 # 1. Temizlik
-rm -rf build dist
+rm -rf ~/ysvdown_builds/macos/*
+rm -rf build
 
-# 2. main.py'yi kopyala (symlink değil)
+# 2. ffmpeg izinleri (ilk kullanımda zorunlu)
+xattr -d com.apple.quarantine ffmpeg 2>/dev/null
+chmod +x ffmpeg
+
+# 3. main.py'yi kopyala (symlink değil)
 cp ../main.py .
 
-# 3. Build (--no-strip zorunlu!)
-/usr/local/opt/python@3.11/bin/python3.11 setup.py py2app --no-strip
+# 4. Build (--no-strip zorunlu!)
+/usr/local/opt/python@3.11/bin/python3.11 setup.py py2app --no-strip \
+  --dist-dir ~/ysvdown_builds/macos/dist
 
-# 4. ffmpeg kopyala
-cp ffmpeg dist/YS\ Video\ Downloader.app/Contents/MacOS/
+# 5. ffmpeg kopyala
+cp ffmpeg ~/ysvdown_builds/macos/dist/YS\ Video\ Downloader.app/Contents/MacOS/
 
-# 5. DMG oluştur
+# 6. build ve main.py temizle
+rm -rf build
+rm main.py
+
+# 7. DMG oluştur
 hdiutil create -volname "YS Video Downloader v2.8" \
-  -srcfolder "dist/YS Video Downloader.app" \
+  -srcfolder ~/ysvdown_builds/macos/dist/"YS Video Downloader.app" \
   -ov -format UDZO \
-  dist/ysvdown_v2.8_macos.dmg
+  ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
 
-# 6. Hash
-shasum -a 256 dist/ysvdown_v2.8_macos.dmg
+# 8. Hash
+shasum -a 256 ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
+```
 
 # 7. Temizlik
 rm main.py
