@@ -262,7 +262,7 @@ class YSVideoDownloader:
         self.download_button = tk.Button(
             self.frame_action, text="İNDİR", state="disabled",
             command=lambda: self.indirmeyi_baslat(playlist_tercihi=False),
-            height=2, cursor="hand2",
+            height=2, cursor="pointinghand" if IS_MACOS else "hand2",
             **buton_disabled_renk()
         )
         self.download_button.pack(fill="x")
@@ -275,7 +275,7 @@ class YSVideoDownloader:
         self.btn_tek_indir = tk.Button(
             self.frame_playlist_btns, text="VİDEOYU İNDİR",
             command=lambda: self.indirmeyi_baslat(playlist_tercihi=False),
-            height=2, cursor="hand2",
+            height=2, cursor="pointinghand" if IS_MACOS else "hand2",
             **buton_renk("#0078D7")
         )
         self.btn_tek_indir.grid(row=0, column=0, sticky="ew", padx=(0, 5))
@@ -283,7 +283,7 @@ class YSVideoDownloader:
         self.btn_playlist_indir = tk.Button(
             self.frame_playlist_btns, text="TÜM LİSTEYİ İNDİR",
             command=lambda: self.indirmeyi_baslat(playlist_tercihi=True),
-            height=2, cursor="hand2",
+            height=2, cursor="pointinghand" if IS_MACOS else "hand2",
             **buton_renk("#28a745")
         )
         self.btn_playlist_indir.grid(row=0, column=1, sticky="ew", padx=(5, 0))
@@ -309,7 +309,7 @@ class YSVideoDownloader:
             text="yt-dlp güncelle", 
             fg="#999999",  # Açık gri
             font=("Segoe UI", 7, "underline"),
-            cursor="hand2"
+            cursor="pointinghand" if IS_MACOS else "hand2"
         )
         self.update_link.pack(side=tk.RIGHT, padx=15)
         self.update_link.bind("<Button-1>", lambda e: self.ytdlp_versiyon_kontrol())
