@@ -14,7 +14,7 @@
 
 ## 📝 **Değişiklik Geçmişi**
 
-### **v2.8** (2026-03-30)
+### **v2.8** (2026-03-26)
 #### 🚀 Yeni Özellikler
 - **🍎 macOS UI İyileştirmesi:** Native buton görünümü, platform renk dili uyumu
 - **🔤 Font İyileştirmesi:** macOS'ta okunabilirlik için büyütülmüş font boyutları
@@ -106,8 +106,14 @@ Desteklenen platformların tam listesi için: [yt-dlp siteler listesi](https://g
 
 #### macOS
 1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.8_macos.dmg` dosyasını indirin
-2. DMG dosyasını açın, `YS Video Downloader.app` dosyasını `Applications` klasörüne sürükleyin
-3. İlk açılışta: Sağ tıklayın → **Aç** → **Aç** (Gatekeeper uyarısını geçmek için)
+2. DMG dosyasını açın, `YS Video Downloader.app` dosyasını **Desktop**'a sürükleyin
+3. Terminali açın ve şu komutu çalıştırın:
+```bash
+xattr -dr com.apple.quarantine ~/Desktop/YS\ Video\ Downloader.app
+```
+4. Uygulamayı çift tıklayarak çalıştırın
+
+> **Not:** "Launch error" veya Gatekeeper uyarısı alırsanız 3. adımı uygulamadan atlamış olabilirsiniz.
 
 ---
 
@@ -167,14 +173,21 @@ Remove-Item windows\main.py
 
 #### Build — macOS (Terminal)
 ```bash
-# Önce bir kez: build çıktıları için OneDrive dışında klasör oluştur
-mkdir -p ~/ysvdown_builds/macos
+# Önce bir kez yapılacaklar:
+# 1. Python.org'dan Python 3.10 indir: https://www.python.org/downloads/release/python-31011/
+#    "macOS 64-bit universal2 installer" seç
+# 2. Sertifikaları kur:
+#    /Applications/Python\ 3.10/Install\ Certificates.command
+# 3. Build çıktıları için OneDrive dışında klasör oluştur:
+#    mkdir -p ~/ysvdown_builds/macos
+# 4. Bağımlılıkları kur:
+#    /Library/Frameworks/Python.framework/Versions/3.10/bin/pip3.10 install py2app yt-dlp mutagen pycryptodome websockets brotli
 
 cd macos
 
 # 1. Temizlik
 rm -rf ~/ysvdown_builds/macos/*
-rm -rf build
+rm -rf build __pycache__
 
 # 2. ffmpeg izinleri (ilk kullanımda zorunlu)
 xattr -d com.apple.quarantine ffmpeg 2>/dev/null
@@ -184,23 +197,27 @@ chmod +x ffmpeg
 cp ../main.py .
 
 # 4. Build (--no-strip zorunlu!)
-/usr/local/opt/python@3.11/bin/python3.11 setup.py py2app --no-strip \
+/Library/Frameworks/Python.framework/Versions/3.10/bin/python3.10 setup.py py2app --no-strip \
   --dist-dir ~/ysvdown_builds/macos/dist
 
 # 5. ffmpeg kopyala
 cp ffmpeg ~/ysvdown_builds/macos/dist/YS\ Video\ Downloader.app/Contents/MacOS/
 
 # 6. build ve main.py temizle
-rm -rf build
+rm -rf build __pycache__
 rm main.py
 
-# 7. DMG oluştur
+# 7. İmzala (Monterey+ uyumluluğu için zorunlu)
+xattr -cr ~/ysvdown_builds/macos/dist/"YS Video Downloader.app"
+codesign --force --deep --sign - ~/ysvdown_builds/macos/dist/"YS Video Downloader.app"
+
+# 8. DMG oluştur
 hdiutil create -volname "YS Video Downloader v2.8" \
   -srcfolder ~/ysvdown_builds/macos/dist/"YS Video Downloader.app" \
   -ov -format UDZO \
   ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
 
-# 8. Hash
+# 9. Hash
 shasum -a 256 ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
 ```
 
