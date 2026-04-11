@@ -15,7 +15,7 @@ OPTIONS = {
         'CFBundleDisplayName': 'YS Video Downloader v2.8',
         'CFBundleVersion': '2.8.0',
         'CFBundleShortVersionString': '2.8.0',
-        'LSMinimumSystemVersion': '10.13',
+        'LSMinimumSystemVersion': '12.0',
     }
 }
 
