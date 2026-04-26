@@ -113,7 +113,7 @@ xattr -dr com.apple.quarantine ~/Desktop/YS\ Video\ Downloader.app
 ```
 4. Uygulamayı çift tıklayarak çalıştırın
 
-> **Not:** "Launch error" veya Gatekeeper uyarısı alırsanız 3. adımı uygulamadan atlamış olabilirsiniz.
+> **Not:** Adım 3 yerine System Settings → Privacy & Security → "Open Anyway" seçeneğini de kullanabilirsiniz.
 
 ---
 
@@ -182,6 +182,9 @@ Remove-Item windows\main.py
 #    mkdir -p ~/ysvdown_builds/macos
 # 4. Bağımlılıkları kur:
 #    /Library/Frameworks/Python.framework/Versions/3.10/bin/pip3.10 install py2app yt-dlp mutagen pycryptodome websockets brotli
+# 5. Static ffmpeg indir: https://evermeet.cx/ffmpeg/ → "Download as ZIP"
+#    macos/ffmpeg olarak kaydet, quarantine temizle:
+#    xattr -d com.apple.quarantine macos/ffmpeg
 
 cd macos
 
