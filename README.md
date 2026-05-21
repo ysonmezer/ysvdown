@@ -1,4 +1,4 @@
-# 🎥 YS Video Downloader v2.8
+# 🎥 YS Video Downloader v2.9
 
 ![GitHub release](https://img.shields.io/github/v/release/ysonmezer/ysvdown?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)
@@ -7,12 +7,22 @@
 
 Çeşitli video barındırma platformlarından medya içeriklerini kaydetmek için geliştirilmiş, **yt-dlp** tabanlı, açık kaynaklı masaüstü uygulaması.
 
-![Screenshot](https://via.placeholder.com/800x500/0078D7/FFFFFF?text=YS+Video+Downloader+v2.8)
+![Screenshot](https://via.placeholder.com/800x500/0078D7/FFFFFF?text=YS+Video+Downloader+v2.9)
 <!-- Yukarıdaki resmi kendi screenshot'ınızla değiştirin -->
 
 ---
 
 ## 📝 **Değişiklik Geçmişi**
+
+### **v2.9** (2026-05-21)
+#### 🔧 Düzeltmeler
+- **🐛 Bug Fix:** `analiz_thread` içindeki çift `except` bloğu düzeltildi (ikinci blok hiç çalışmıyordu, analiz hataları kullanıcıya gösterilmiyordu)
+- **🐛 Bug Fix:** `lambda` closure bug'ı düzeltildi (`lambda msg=hata_mesaji:` ile sabitlendi)
+
+#### 🚀 Yeni Özellikler
+- **🎵 MP3 Dönüştürme UX:** MP3 indirirken FFmpeg dönüştürme aşaması artık kullanıcıya gösteriliyor. Dönüştürme başlarken turuncu buton + indeterminate progress + log mesajı çıkıyor. Uygulama donmadı, işlem devam ediyor.
+
+---
 
 ### **v2.8** (2026-03-26)
 #### 🚀 Yeni Özellikler
@@ -73,6 +83,7 @@
 - ✅ Akıllı playlist analizi (%300 hız artışı)
 - ✅ İndirme ilerlemesi takibi
 - ✅ Detaylı işlem kayıtları
+- ✅ MP3 dönüştürme ilerleme bildirimi
 
 ---
 
@@ -91,21 +102,21 @@ Desteklenen platformların tam listesi için: [yt-dlp siteler listesi](https://g
 ### **Son Kullanıcılar İçin (Portable - Kurulum Gerektirmez)**
 
 #### Windows
-1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.8_windows_portable.zip` dosyasını indirin
+1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.9_windows_portable.zip` dosyasını indirin
 2. ZIP dosyasını istediğiniz bir klasöre çıkartın
-3. `YS Video Downloader v2.8.exe` dosyasını çalıştırın
+3. `YS Video Downloader v2.9.exe` dosyasını çalıştırın
 
 **⚠️ Önemli:** Tüm dosyaları klasör içinde tutun!
 ```
-📂 YS Video Downloader v2.8/
- ┣ 📜 YS Video Downloader v2.8.exe  ← Bunu çalıştırın
+📂 YS Video Downloader v2.9/
+ ┣ 📜 YS Video Downloader v2.9.exe  ← Bunu çalıştırın
  ┣ ⚙️ ffmpeg.exe                    ← Gerekli
  ┣ 🖼️ logo.ico                      ← Gerekli
  ┗ 📂 _internal/                    ← Gerekli
 ```
 
 #### macOS
-1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.8_macos.dmg` dosyasını indirin
+1. **[Releases](https://github.com/ysonmezer/ysvdown/releases/latest)** sayfasından `ysvdown_v2.9_macos.dmg` dosyasını indirin
 2. DMG dosyasını açın, `YS Video Downloader.app` dosyasını **Desktop**'a sürükleyin
 3. Terminali açın ve şu komutu çalıştırın:
 ```bash
@@ -113,7 +124,7 @@ xattr -dr com.apple.quarantine ~/Desktop/YS\ Video\ Downloader.app
 ```
 4. Uygulamayı çift tıklayarak çalıştırın
 
-> **Not:** "Launch error" veya Gatekeeper uyarısı alırsanız 3. adımı uygulamadan atlamış olabilirsiniz.
+> **Not:** Adım 3 yerine System Settings → Privacy & Security → "Open Anyway" seçeneğini de kullanabilirsiniz.
 
 ---
 
@@ -122,6 +133,9 @@ xattr -dr com.apple.quarantine ~/Desktop/YS\ Video\ Downloader.app
 #### Gereksinimler
 - Python 3.8 veya üzeri
 - pip paket yöneticisi
+
+> **macOS notu:** Homebrew Python kullanmayın. Python.org'dan Python 3.10 indirin:
+> https://www.python.org/downloads/release/python-31011/ → "macOS 64-bit universal2 installer"
 
 #### Kurulum
 ```bash
@@ -155,16 +169,16 @@ pyinstaller ysvdown.spec `
   --workpath C:\ysvdown_builds\windows\build
 
 # 4. FFmpeg ve logo kopyala
-Copy-Item ffmpeg.exe "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.8\"
-Copy-Item logo.ico "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.8\"
+Copy-Item ffmpeg.exe "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.9\"
+Copy-Item logo.ico "C:\ysvdown_builds\windows\dist\YS Video Downloader v2.9\"
 
 # 5. ZIP oluştur
 cd C:\ysvdown_builds\windows\dist
-Compress-Archive -Path "YS Video Downloader v2.8" `
-  -DestinationPath "ysvdown_v2.8_windows_portable.zip" -Force
+Compress-Archive -Path "YS Video Downloader v2.9" `
+  -DestinationPath "ysvdown_v2.9_windows_portable.zip" -Force
 
 # 6. Hash
-Get-FileHash ysvdown_v2.8_windows_portable.zip -Algorithm SHA256
+Get-FileHash ysvdown_v2.9_windows_portable.zip -Algorithm SHA256
 
 # 7. Temizlik
 cd ..\..\..
@@ -182,6 +196,9 @@ Remove-Item windows\main.py
 #    mkdir -p ~/ysvdown_builds/macos
 # 4. Bağımlılıkları kur:
 #    /Library/Frameworks/Python.framework/Versions/3.10/bin/pip3.10 install py2app yt-dlp mutagen pycryptodome websockets brotli
+# 5. Static ffmpeg indir: https://evermeet.cx/ffmpeg/ → "Download as ZIP"
+#    macos/ffmpeg olarak kaydet, quarantine temizle:
+#    xattr -d com.apple.quarantine macos/ffmpeg
 
 cd macos
 
@@ -212,17 +229,13 @@ xattr -cr ~/ysvdown_builds/macos/dist/"YS Video Downloader.app"
 codesign --force --deep --sign - ~/ysvdown_builds/macos/dist/"YS Video Downloader.app"
 
 # 8. DMG oluştur
-hdiutil create -volname "YS Video Downloader v2.8" \
+hdiutil create -volname "YS Video Downloader v2.9" \
   -srcfolder ~/ysvdown_builds/macos/dist/"YS Video Downloader.app" \
   -ov -format UDZO \
-  ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
+  ~/ysvdown_builds/macos/ysvdown_v2.9_macos.dmg
 
 # 9. Hash
-shasum -a 256 ~/ysvdown_builds/macos/ysvdown_v2.8_macos.dmg
-```
-
-# 7. Temizlik
-rm main.py
+shasum -a 256 ~/ysvdown_builds/macos/ysvdown_v2.9_macos.dmg
 ```
 
 ---
