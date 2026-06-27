@@ -12,3 +12,16 @@ macos/dist/
 macos/build/
 macos/ffmpeg
 YSVDOWN_PROJE_REHBERI_V2.9.md
+
+# Web backend/frontend local files
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+.env
+backend/.env
+frontend/.env
+downloads/
+backend/downloads/
+frontend/node_modules/
+frontend/dist/
