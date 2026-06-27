@@ -3,6 +3,11 @@
 # Ana bağımlılık
 yt-dlp>=2026.03.17
 
+# Web backend bağımlılıkları
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.1
+
 # Build araçları
 pyinstaller>=6.3.0       # Windows build
 py2app>=0.28.10          # macOS build
